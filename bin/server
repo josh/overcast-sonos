@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+PORT="8080"
+[[ -n "$1" ]] && PORT="$1"
+
+DIR="$(pwd)"
+
+cat >/tmp/httpd.conf <<EOS
+LoadModule authz_core_module /usr/libexec/apache2/mod_authz_core.so
+LoadModule dir_module /usr/libexec/apache2/mod_dir.so
+LoadModule mime_module /usr/libexec/apache2/mod_mime.so
+LoadModule php5_module /usr/libexec/apache2/libphp5.so
+LoadModule unixd_module /usr/libexec/apache2/mod_unixd.so
+
+ServerName localhost
+Listen $PORT
+
+PidFile /tmp/httpd.pid
+Mutex default:/tmp
+
+DocumentRoot "$DIR"
+DirectoryIndex index.php
+
+AddType application/x-httpd-php .php
+
+ErrorLog "/tmp/httpd_error_log"
+LogLevel info
+EOS
+
+echo -n > /tmp/httpd_error_log
+httpd -d "$DIR" -f /tmp/httpd.conf -DFOREGROUND & tail -f /tmp/httpd_error_log
