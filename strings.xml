@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<stringtables xmlns="http://sonos.com/sonosapi">
+  <stringtable rev="1" xml:lang="en-US">
+    <string stringId="ServicePromo">Welcome! This string is displayed in the 'Add Service' wizard.</string>
+    <string stringId="STAR_TRACK">Star Track</string>
+    <string stringId="SUCCESS_STAR">Track has been starred</string>
+    <string stringId="Error0Message">An example of a SMAPI Custom Error Message.</string>
+  </stringtable>
+</stringtables>
