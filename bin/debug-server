@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PORT="8080"
+[[ -n "$1" ]] && PORT="$1"
+
+exec sudo tcpdump -vvnS -i lo0 port $PORT
