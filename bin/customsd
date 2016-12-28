@@ -12,12 +12,12 @@ LOCAL_IP=$(ifconfig -a | grep 'inet ' | grep broadcast | awk '{ print $2 }')
 
 SID="255"
 NAME="Overcast"
-URI="http://$LOCAL_IP/smapi.php"
-SECURE_URI="http://$LOCAL_IP/smapi.php"
+URI="http://$LOCAL_IP:3000/smapi.php"
+SECURE_URI="http://$LOCAL_IP:3000/smapi.php"
 POLL_INTERVAL=10
 AUTH_TYPE="Anonymous"
 STRINGS_VERSION=1
-STRINGS_URI="http://$LOCAL_IP/strings.xml"
+STRINGS_URI="http://$LOCAL_IP:3000/strings.xml"
 PRESENTATION_MAP_VERSION=0
 PRESENTATION_MAP_URI=""
 CONTAINER_TYPE="SoundLab"

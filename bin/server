@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-PORT="8080"
+PORT="3000"
 [[ -n "$1" ]] && PORT="$1"
 
 DIR="$(pwd)"
