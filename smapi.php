@@ -1,5 +1,5 @@
 <?php
-  $version = 1;
+  $version = 0;
 
   $podcasts = array();
 
@@ -49,6 +49,22 @@
       $mediaMetadata = array();
 
       if ($id == "root") {
+        $media = new StdClass();
+        $media->id = "playlists";
+        $media->itemType = "container";
+        $media->displayType = "";
+        $media->title = "Playlists";
+        $mediaCollection[] = $media;
+
+        $media = new StdClass();
+        $media->id = "podcasts";
+        $media->itemType = "container";
+        $media->displayType = "";
+        $media->title = "Podcasts";
+        $mediaCollection[] = $media;
+      } elseif ($id == "playlists") {
+
+      } elseif ($id == "podcasts") {
         foreach ($GLOBALS['podcasts'] as $id => $podcast) {
           $media = new StdClass();
           $media->id = $podcast->id;
