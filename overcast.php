@@ -1,21 +1,36 @@
 <?php
   class Podcast {
-    public $url;
     public $id;
     public $title;
-    public $image_url;
-    public $episodes = [];
+    public $imageURL;
+    public $episodeIDs;
   }
 
   class Episode {
-    public $podcast;
     public $id;
-    public $url;
+    public $podcastId;
     public $title;
-    public $publishedAt;
+    public $description;
+    public $imageURL;
+    public $mimeType;
+    public $url;
   }
 
-  function fetchPodcasts() {
+  function fetch($url) {
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+
+    $body = curl_exec($ch);
+
+    curl_close($ch);
+
+    return $body;
+  }
+
+  function fetchAccount() {
     $ch = curl_init();
 
     curl_setopt($ch, CURLOPT_URL, "https://overcast.fm/podcasts");
@@ -38,63 +53,27 @@
 
     $xpath = new DOMXpath($dom);
 
-    $podcasts = array();
-    $podcasts_by_title = array();
-    $feedcells = $xpath->query('//a[@class="feedcell"]');
+    $result = new StdClass();
+    $result->episodeIDs = array();
+    $result->podcastIDs = array();
 
-    foreach ($feedcells as $feedcell) {
-      $podcast = new Podcast();
-
-      $podcast->id = $feedcell->getAttribute('href');
-      $podcast->url = "https://overcast.fm" . $feedcell->getAttribute('href');
-
-      $img = $xpath->query('.//img[@class="art"]', $feedcell);
-      $cloudfront_url = $img[0]->getAttribute('src');
-      $params = array();
-      parse_str(parse_url($cloudfront_url, PHP_URL_QUERY), $params);
-      $podcast->image_url = $params['u'];
-
-      $div = $xpath->query('.//div[@class="title"]', $feedcell);
-      $podcast->title = $div[0]->textContent;
-
-      $podcasts[] = $podcast;
-      $podcasts_by_title[$podcast->title] = $podcast;
+    foreach ($xpath->query('//a[@class="feedcell"]') as $cell) {
+      $id = substr($cell->getAttribute('href'), 1);
+      if ($id != 'uploads') {
+        $result->podcastIDs[] = $id;
+      }
     }
 
-    $episodecells = $xpath->query('//a[@class="episodecell"]');
-
-    foreach ($episodecells as $episodecell) {
-      $episode = new Episode();
-
-      $title = $xpath->query('.//div[@class="caption2 singleline"]', $episodecell)[0]->textContent;
-      $episode->podcast = $podcasts_by_title[$title];
-      $episode->podcast->episodes[] = $episode;
-
-      $episode->title = $xpath->query('.//div[@class="title singleline"]', $episodecell)[0]->textContent;
-      $episode->publishedAt = $xpath->query('.//div[@class="caption2 singleline"]', $episodecell)[0]->textContent;
-
-      $episode->url = "https://overcast.fm" . $episodecell->getAttribute('href');
-      $episode->id = $episodecell->getAttribute('href');
+    foreach ($xpath->query('//a[@class="episodecell"]') as $cell) {
+      $id = substr($cell->getAttribute('href'), 1);
+      $result->episodeIDs[] = $id;
     }
 
-    return $podcasts;
+    return $result;
   }
 
-  function fetchEpisodeUrl($url) {
-    $ch = curl_init();
-
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Cookie: o=' . $_ENV['COOKIE']]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, 1);
-
-    $response = curl_exec($ch);
-
-    $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    $header = substr($response, 0, $header_size);
-    $body = substr($response, $header_size);
-
-    curl_close($ch);
+  function fetchPodcast($id) {
+    $body = fetch("https://overcast.fm/" . $id);
 
     libxml_use_internal_errors(true);
 
@@ -103,9 +82,51 @@
 
     $xpath = new DOMXpath($dom);
 
-    $source = $xpath->query('//audio/source')[0];
-    // $source->getAttribute('type')
+    $podcast = new Podcast();
+    $podcast->id = $id;
 
-    return $source->getAttribute('src');
+    $podcast->title = $xpath->query('//h2[@class="centertext"]')[0]->textContent;
+
+    $url = $xpath->query('//img[@class="art fullart"]')[0]->getAttribute('src');
+    $params = array();
+    parse_str(parse_url($url, PHP_URL_QUERY), $params);
+    $podcast->imageURL = $params['u'];
+
+    $podcast->episodeIDs = [];
+    foreach ($xpath->query('//a[@class="extendedepisodecell usernewepisode"]') as $a) {
+      $podcast->episodeIDs[] = substr($a->getAttribute('href'), 1);
+    }
+
+    return $podcast;
+  }
+
+  function fetchEpisode($id) {
+    $body = fetch("https://overcast.fm/" . $id);
+
+    libxml_use_internal_errors(true);
+
+    $dom = new DOMDocument();
+    $dom->loadHTML($body);
+
+    $xpath = new DOMXpath($dom);
+
+    $episode = new Episode();
+    $episode->id = $id;
+
+    $episode->podcastId = substr($xpath->query('//a[@class="ocbutton"]')[0]->getAttribute('href'), 1);
+
+    $episode->title = $xpath->query('//meta[@name="og:title"]')[0]->getAttribute('content');
+    $episode->description = $xpath->query('//meta[@name="og:description"]')[0]->getAttribute('content');
+
+    $url = $xpath->query('//meta[@name="og:image"]')[0]->getAttribute('content');
+    $params = array();
+    parse_str(parse_url($url, PHP_URL_QUERY), $params);
+    $episode->imageURL = $params['u'];
+
+    $source = $xpath->query('//audio/source')[0];
+    $episode->mimeType = $source->getAttribute('type');
+    $episode->url = $source->getAttribute('src');
+
+    return $episode;
   }
 ?>

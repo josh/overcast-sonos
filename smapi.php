@@ -1,25 +1,12 @@
 <?php
   include 'overcast.php';
 
-  $version = microtime();
-
-  $podcasts = array();
-  $media = array();
-
-  foreach (fetchPodcasts() as $podcast) {
-    $podcasts[] = $podcast;
-    $media[$podcast->id] = $podcast;
-    foreach ($podcast->episodes as $episode) {
-      $media[$episode->id] = $episode;
-    }
-  }
-
   class Sonos {
     function getLastUpdate() {
       $response = new StdClass();
       $response->getLastUpdateResult = new StdClass();
-      $response->getLastUpdateResult->favorites = microtime();
-      $response->getLastUpdateResult->catalog = microtime();
+      $response->getLastUpdateResult->favorites = 0;
+      $response->getLastUpdateResult->catalog = 1;
       $response->getLastUpdateResult->pollInterval = 10;
       return $response;
     }
@@ -48,15 +35,23 @@
         $media->title = "Podcasts";
         $mediaCollection[] = $media;
       } elseif ($id == "active") {
+        $episodeIDs = fetchAccount()->episodeIDs;
 
+        foreach ($episodeIDs as $episodeID) {
+          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID);
+        }
       } elseif ($id == "podcasts") {
-        foreach ($GLOBALS['podcasts'] as $podcast) {
-          $mediaCollection[] = $this->findPodcastMediaMetadata($podcast->id);
+        foreach (fetchAccount()->podcastIDs as $podcastID) {
+          $mediaCollection[] = $this->findPodcastMediaMetadata($podcastID);
         }
       } else {
-        $podcast = $GLOBALS['media'][$id];
-        foreach ($podcast->episodes as $episode) {
-          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episode->id);
+        $podcast = fetchPodcast($id);
+        $activeEpisodeIDs = fetchAccount()->episodeIDs;
+
+        foreach ($podcast->episodeIDs as $episodeID) {
+          if (in_array($episodeID, $activeEpisodeIDs)) {
+            $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, $podcast);
+          }
         }
       }
 
@@ -81,38 +76,44 @@
 
     function getMediaURI($params) {
       $id = $params->id;
-      $episode = $GLOBALS['media'][$id];
 
       $response = new StdClass();
-      $response->getMediaURIResult = fetchEpisodeUrl($episode->url);
+      $response->getMediaURIResult = fetchEpisode($id)->url;
       return $response;
     }
 
     function findPodcastMediaMetadata($id) {
-      $podcast = $GLOBALS['media'][$id];
+      $podcast = fetchPodcast($id);
       $media = new StdClass();
       $media->id = $podcast->id;
       $media->itemType = "container";
       $media->displayType = "";
       $media->title = $podcast->title;
-      $media->albumArtURI = $podcast->image_url;
+      $media->albumArtURI = $podcast->imageURL;
       return $media;
     }
 
-    function findEpisodeMediaMetadata($id) {
-      $episode = $GLOBALS['media'][$id];
+    function findEpisodeMediaMetadata($id, $podcast) {
+      $episode = fetchEpisode($id);
+      if (!$podcast) {
+        $podcast = fetchPodcast($episode->podcastId);
+      }
+
       $media = new StdClass();
       $media->id = $episode->id;
       $media->displayType = "";
-      $media->mimeType = "audio/mp3";
+      $media->mimeType = $episode->mimeType;
       $media->itemType = "track";
       $media->title = $episode->title;
       $media->summary = ""; // $episode->description;
       $media->trackMetadata = new StdClass();
       $media->trackMetadata->canPlay = true;
+      $media->trackMetadata->albumArtURI = $episode->imageURL;
       // $media->trackMetadata->duration = $episode->duration;
-      $media->trackMetadata->artist = $episode->podcast->title;
-      $media->trackMetadata->album = $episode->podcast->title;
+      $media->trackMetadata->artistId = $podcast->id;
+      $media->trackMetadata->artist = $podcast->title;
+      $media->trackMetadata->albumId = $podcast->id;
+      $media->trackMetadata->album = $podcast->title;
       return $media;
     }
   }
