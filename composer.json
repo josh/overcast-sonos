@@ -1,6 +1,7 @@
 {
   "require": {
     "ext-memcached": "*",
-    "ext-soap": "*"
+    "ext-soap": "*",
+    "php": "^7.0.0"
   }
 }
