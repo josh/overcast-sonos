@@ -35,7 +35,6 @@
       $count = $params->count;
       $id = $params->id;
       $index = $params->index;
-      $recursive = $params->recursive;
 
       $mediaCollection = array();
       $mediaMetadata = array();
