@@ -115,7 +115,7 @@
 
     $episode->podcastId = substr($xpath->query('//a[@class="ocbutton"]')[0]->getAttribute('href'), 1);
 
-    $episode->title = $xpath->query('//meta[@name="og:title"]')[0]->getAttribute('content');
+    $episode->title = $xpath->query('//div[@class="title"]')[0]->textContent;
     $episode->description = $xpath->query('//meta[@name="og:description"]')[0]->getAttribute('content');
 
     $url = $xpath->query('//meta[@name="og:image"]')[0]->getAttribute('content');
