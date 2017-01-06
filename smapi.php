@@ -58,7 +58,7 @@
         $episodeIDs = fetchAccount($this->sessionId)->episodeIDs;
 
         foreach ($episodeIDs as $episodeID) {
-          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID);
+          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, NULL);
         }
       } elseif ($id == "podcasts") {
         foreach (fetchAccount($this->sessionId)->podcastIDs as $podcastID) {
