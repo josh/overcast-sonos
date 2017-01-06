@@ -30,11 +30,11 @@
     return $body;
   }
 
-  function fetchAccount() {
+  function fetchAccount($token) {
     $ch = curl_init();
 
     curl_setopt($ch, CURLOPT_URL, "https://overcast.fm/podcasts");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Cookie: o=' . $_ENV['COOKIE']]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Cookie: o=$token"]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 1);
 
@@ -128,5 +128,28 @@
     $episode->url = $source->getAttribute('src');
 
     return $episode;
+  }
+
+  function login($email, $password) {
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, "https://overcast.fm/login");
+    curl_setopt($ch, CURLOPT_POST, 2);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array(
+      'email' => $email,
+      'password' => $password
+    )));
+    curl_setopt($ch, CURLOPT_HEADER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+    $response = curl_exec($ch);
+
+    $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $header = substr($response, 0, $header_size);
+
+    curl_close($ch);
+
+    preg_match('/Set-Cookie: o=([^;]+);/', $header, $matches);
+    return $matches[1];
   }
 ?>

@@ -2,6 +2,26 @@
   include 'overcast.php';
 
   class Sonos {
+    private $sessionId;
+
+    function getSessionId($params) {
+      $username = $params->username;
+      $password = $params->password;
+
+      $response = new StdClass();
+
+      $token = login($username, $password);
+      if ($token) {
+        $response->getSessionIdResult = $token;
+      }
+
+      return $response;
+    }
+
+    function credentials($params) {
+      $this->sessionId = $params->sessionId;
+    }
+
     function getLastUpdate() {
       $response = new StdClass();
       $response->getLastUpdateResult = new StdClass();
@@ -35,18 +55,18 @@
         $media->title = "Podcasts";
         $mediaCollection[] = $media;
       } elseif ($id == "active") {
-        $episodeIDs = fetchAccount()->episodeIDs;
+        $episodeIDs = fetchAccount($this->sessionId)->episodeIDs;
 
         foreach ($episodeIDs as $episodeID) {
           $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID);
         }
       } elseif ($id == "podcasts") {
-        foreach (fetchAccount()->podcastIDs as $podcastID) {
+        foreach (fetchAccount($this->sessionId)->podcastIDs as $podcastID) {
           $mediaCollection[] = $this->findPodcastMediaMetadata($podcastID);
         }
       } else {
         $podcast = fetchPodcast($id);
-        $activeEpisodeIDs = fetchAccount()->episodeIDs;
+        $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
 
         foreach ($podcast->episodeIDs as $episodeID) {
           if (in_array($episodeID, $activeEpisodeIDs)) {
