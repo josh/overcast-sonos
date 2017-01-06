@@ -8,16 +8,23 @@ fi
 set -x
 set -e
 
-LOCAL_IP=$(ifconfig -a | grep 'inet ' | grep broadcast | awk '{ print $2 }')
+if [ "$1" = "dev" ]; then
+  LOCAL_IP=$(ifconfig -a | grep 'inet ' | grep broadcast | awk '{ print $2 }')
+  HOST="http://$LOCAL_IP:3000"
+  SECURE_HOST="$HOST"
+else
+  HOST="http://overcast-sonos.herokuapp.com"
+  SECURE_HOST="https://overcast-sonos.herokuapp.com"
+fi
 
 SID="255"
 NAME="Overcast"
-URI="http://$LOCAL_IP:3000/smapi.php"
-SECURE_URI="http://$LOCAL_IP:3000/smapi.php"
+URI="$HOST/smapi.php"
+SECURE_URI="$SECURE_HOST/smapi.php"
 POLL_INTERVAL=10
 AUTH_TYPE="UserId"
 STRINGS_VERSION=1
-STRINGS_URI="http://$LOCAL_IP:3000/strings.xml"
+STRINGS_URI="$SECURE_HOST/strings.xml"
 PRESENTATION_MAP_VERSION=0
 PRESENTATION_MAP_URI=""
 CONTAINER_TYPE="SoundLab"
