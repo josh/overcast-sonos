@@ -92,7 +92,14 @@
   }
 
   function fetchPodcast($id) {
-    $body = fetch("https://overcast.fm/" . $id);
+    global $memcache;
+
+    $key = "overcast:fetchPodcast:$id";
+    $body = $memcache->get($key);
+    if (!$body) {
+      $body = fetch("https://overcast.fm/" . $id);
+      $memcache->set($key, $body, time() + 3600);
+    }
 
     libxml_use_internal_errors(true);
 
@@ -120,7 +127,14 @@
   }
 
   function fetchEpisode($id) {
-    $body = fetch("https://overcast.fm/" . $id);
+    global $memcache;
+
+    $key = "overcast:fetchEpisode:$id";
+    $body = $memcache->get($key);
+    if (!$body) {
+      $body = fetch("https://overcast.fm/" . $id);
+      $memcache->set($key, $body, time() + 86400);
+    }
 
     libxml_use_internal_errors(true);
 
