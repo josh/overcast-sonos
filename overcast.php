@@ -1,4 +1,23 @@
 <?php
+  $memcache = new Memcached();
+  $memcache->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
+
+  if (getenv('MEMCACHIER_USERNAME') && getenv('MEMCACHIER_PASSWORD')) {
+    $memcache->setSaslAuthData(getenv('MEMCACHIER_USERNAME'), getenv('MEMCACHIER_PASSWORD'));
+  }
+
+  if (!$memcache->getServerList()) {
+    if (getenv('MEMCACHIER_SERVERS')) {
+      $servers = explode(',', getenv('MEMCACHIER_SERVERS'));
+      for ($i = 0; $i < count($servers); $i++) {
+        $servers[$i] = explode(':', $servers[$i]);
+      }
+      $memcache->addServers($servers);
+    } else {
+      $memcache->addServer('127.0.0.1', 11211);
+    }
+  }
+
   class Podcast {
     public $id;
     public $title;
