@@ -26,7 +26,7 @@
       $response = new StdClass();
       $response->getLastUpdateResult = new StdClass();
       $response->getLastUpdateResult->favorites = 0;
-      $response->getLastUpdateResult->catalog = 1;
+      $response->getLastUpdateResult->catalog = time();
       $response->getLastUpdateResult->pollInterval = 10;
       return $response;
     }
