@@ -97,7 +97,7 @@
       $id = $params->id;
 
       $response = new StdClass();
-      $response->getMediaURIResult = fetchEpisode($id)->url;
+      $response->getMediaURIResult = followRedirects(fetchEpisode($id)->url);
       return $response;
     }
 
