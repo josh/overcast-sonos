@@ -50,20 +50,23 @@
   }
 
   function fetchAccount($token) {
-    $ch = curl_init();
+    global $memcache;
 
-    curl_setopt($ch, CURLOPT_URL, "https://overcast.fm/podcasts");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Cookie: o=$token"]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, 1);
+    $key = "overcast:fetchAccount:$token";
+    $body = $memcache->get($key);
+    if (!$body) {
+      $ch = curl_init();
 
-    $response = curl_exec($ch);
+      curl_setopt($ch, CURLOPT_URL, "https://overcast.fm/podcasts");
+      curl_setopt($ch, CURLOPT_HTTPHEADER, ["Cookie: o=$token"]);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_HEADER, 0);
 
-    $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    $header = substr($response, 0, $header_size);
-    $body = substr($response, $header_size);
+      $body = curl_exec($ch);
+      $memcache->set($key, $body, time() + 300);
 
-    curl_close($ch);
+      curl_close($ch);
+    }
 
     libxml_use_internal_errors(true);
 
