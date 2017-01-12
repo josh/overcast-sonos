@@ -89,7 +89,7 @@
       $id = $params->id;
 
       $response = new StdClass();
-      $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id);
+      $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id, NULL);
       return $response;
     }
 
