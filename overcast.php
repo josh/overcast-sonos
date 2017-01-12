@@ -186,7 +186,11 @@
     curl_close($ch);
 
     preg_match('/Set-Cookie: o=([^;]+);/', $header, $matches);
-    return $matches[1];
+    if (isset($matches[1])) {
+      return $matches[1];
+    } else {
+      return NULL;
+    }
   }
 
   function followRedirects($url) {
