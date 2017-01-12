@@ -19,7 +19,9 @@
     }
 
     function credentials($params) {
-      $this->sessionId = $params->sessionId;
+      if (isset($params->sessionId)) {
+        $this->sessionId = $params->sessionId;
+      }
     }
 
     function getLastUpdate() {
