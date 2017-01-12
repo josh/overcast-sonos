@@ -23,6 +23,7 @@
     public $title;
     public $imageURL;
     public $episodeIDs;
+    public $episodeDurations;
   }
 
   class Episode {
@@ -123,7 +124,18 @@
 
     $podcast->episodeIDs = [];
     foreach ($xpath->query('//a[@class="extendedepisodecell usernewepisode"]') as $a) {
-      $podcast->episodeIDs[] = substr($a->getAttribute('href'), 1);
+      $id = substr($a->getAttribute('href'), 1);
+      $podcast->episodeIDs[] = $id;
+
+      $caption = $xpath->query('.//div[@class="caption2 singleline"]', $a)[0]->textContent;
+      preg_match('/(\d\d):(\d\d):(\d\d)/', $caption, $matches);
+      if (isset($matches[0])) {
+        $podcast->episodeDurations[$id] = (
+          ((int)$matches[1] * 3600) +
+          ((int)$matches[2] * 60) +
+          ((int)$matches[3])
+        );
+      }
     }
 
     return $podcast;
