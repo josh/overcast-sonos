@@ -8,14 +8,14 @@
       $username = $params->username;
       $password = $params->password;
 
-      $response = new StdClass();
-
       $token = login($username, $password);
       if ($token) {
+        $response = new StdClass();
         $response->getSessionIdResult = $token;
+        return $response;
+      } else {
+        return new SoapFault("Client.LoginInvalid", "Overcast login failed");
       }
-
-      return $response;
     }
 
     function credentials($params) {
