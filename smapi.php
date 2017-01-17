@@ -100,6 +100,42 @@
 
       $response = new StdClass();
       $response->getMediaURIResult = followRedirects(fetchEpisode($id)->url);
+
+      $progress = fetchEpisodeProgress($this->sessionId, $id);
+      if ($progress) {
+        $response->positionInformation = new StdClass();
+        $response->positionInformation->id = $id;
+        $response->positionInformation->index = 0;
+        $response->positionInformation->offsetMillis = $progress->position * 1000;
+      }
+
+      return $response;
+    }
+
+    function reportPlaySeconds($params) {
+      $id = $params->id;
+      $offsetMillis = $params->offsetMillis;
+
+      if ($offsetMillis) {
+        updateEpisodeProgress($this->sessionId, $id, $offsetMillis / 1000);
+      }
+
+      $response = new StdClass();
+      $response->reportPlaySecondsResult = new StdClass();
+      $response->reportPlaySecondsResult->interval = 10;
+      return $response;
+    }
+
+    function reportPlayStatus($params) {
+      $id = $params->id;
+      $offsetMillis = $params->offsetMillis;
+
+      if ($offsetMillis) {
+        updateEpisodeProgress($this->sessionId, $id, $offsetMillis / 1000);
+      }
+
+      $response = new StdClass();
+      $response->reportPlayStatusResult = new StdClass();
       return $response;
     }
 
@@ -129,6 +165,7 @@
       $media->summary = ""; // $episode->description;
       $media->trackMetadata = new StdClass();
       $media->trackMetadata->canPlay = true;
+      $media->trackMetadata->canResume = true;
       $media->trackMetadata->albumArtURI = $episode->imageURL;
       $media->trackMetadata->duration = $podcast->episodeDurations[$id];
       $media->trackMetadata->artistId = $podcast->id;

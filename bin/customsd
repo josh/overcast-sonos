@@ -41,6 +41,7 @@ curl -v "http://$SONOS_IP:1400/customsd" \
   --data-urlencode "stringsUri=$STRINGS_URI" \
   --data-urlencode "presentationMapVersion=$PRESENTATION_MAP_VERSION" \
   --data-urlencode "presentationMapUri=$PRESENTATION_MAP_URI" \
-  --data-urlencode "containerType=$CONTAINER_TYPE"
+  --data-urlencode "containerType=$CONTAINER_TYPE" \
+  --data-urlencode "caps=playbackLogging"
 
 exit

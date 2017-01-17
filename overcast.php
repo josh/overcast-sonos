@@ -34,14 +34,20 @@
     public $imageURL;
     public $mimeType;
     public $url;
+    public $itemId;
+    public $speedId;
   }
 
-  function fetch($url) {
+  function fetch($url, $token = NULL) {
     $ch = curl_init();
 
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 0);
+
+    if ($token) {
+      curl_setopt($ch, CURLOPT_HTTPHEADER, ["Cookie: o=$token"]);
+    }
 
     $body = curl_exec($ch);
 
@@ -56,17 +62,8 @@
     $key = "overcast:fetchAccount:$token";
     $body = $memcache->get($key);
     if (!$body) {
-      $ch = curl_init();
-
-      curl_setopt($ch, CURLOPT_URL, "https://overcast.fm/podcasts");
-      curl_setopt($ch, CURLOPT_HTTPHEADER, ["Cookie: o=$token"]);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_HEADER, 0);
-
-      $body = curl_exec($ch);
+      $body = fetch("https://overcast.fm/podcasts", $token);
       $memcache->set($key, $body, time() + 300);
-
-      curl_close($ch);
     }
 
     libxml_use_internal_errors(true);
@@ -171,11 +168,81 @@
     parse_str(parse_url($url, PHP_URL_QUERY), $params);
     $episode->imageURL = $params['u'];
 
+    $audio = $xpath->query('//audio')[0];
+    $episode->itemId = $audio->getAttribute('data-item-id');
+    $episode->speedId = $audio->getAttribute('data-speed-id');
+
     $source = $xpath->query('//audio/source')[0];
     $episode->mimeType = $source->getAttribute('type');
     $episode->url = $source->getAttribute('src');
 
     return $episode;
+  }
+
+  function fetchEpisodeProgress($token, $id) {
+    global $memcache;
+
+    $body = fetch("https://overcast.fm/" . $id, $token);
+
+    libxml_use_internal_errors(true);
+
+    $dom = new DOMDocument();
+    $dom->loadHTML($body);
+
+    $xpath = new DOMXpath($dom);
+
+    $audio = $xpath->query('//audio')[0];
+
+    $itemId = $audio->getAttribute('data-item-id');
+    $speedId = (int)$audio->getAttribute('data-speed-id');
+    $version = (int)$audio->getAttribute('data-sync-version');
+    $position = (int)$audio->getAttribute('data-start-time');
+
+    $progress = new StdClass();
+    $progress->itemId = $itemId;
+    $progress->speedId = $speedId;
+    $progress->version = $version;
+    $progress->position = $position;
+
+    $key = "overcast:fetchEpisodeProgress:$token:$id";
+    $memcache->set($key, serialize($progress), time() + 3600);
+
+    return $progress;
+  }
+
+  function updateEpisodeProgress($token, $id, $position) {
+    global $memcache;
+
+    $key = "overcast:fetchEpisodeProgress:$token:$id";
+    $rawProgress = $memcache->get($key);
+    $progress = $rawProgress ?
+      unserialize($rawProgress) :
+      fetchEpisodeProgress($token, $id);
+
+    $episode = fetchEpisode($id);
+
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, "https://overcast.fm/podcasts/set_progress/" . $episode->itemId);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Cookie: o=$token"]);
+    curl_setopt($ch, CURLOPT_POST, 2);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array(
+      'speed' => '' . $progress->speedId,
+      'v' => '' . $progress->version,
+      'p' => '' . $position
+    )));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+
+    $version = curl_exec($ch);
+
+    curl_close($ch);
+
+    $progress->version = (int)$version;
+    $progress->position = (int)$position;
+
+    $key = "overcast:fetchEpisodeProgress:$token:$id";
+    $memcache->set($key, serialize($progress), time() + 3600);
   }
 
   function login($email, $password) {
