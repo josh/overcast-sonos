@@ -1,0 +1,17 @@
+body {
+  padding-top: 50px;
+}
+
+.header {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+.featurette-divider {
+  margin: 80px 0;
+}
+
+.featurette-heading {
+  line-height: 1;
+  letter-spacing: -1px;
+}
