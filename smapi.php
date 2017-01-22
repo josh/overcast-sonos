@@ -112,6 +112,19 @@
       return $response;
     }
 
+    function setPlayedSeconds($params) {
+      $id = $params->id;
+      $offsetMillis = $params->offsetMillis;
+
+      if ($offsetMillis) {
+        updateEpisodeProgress($this->sessionId, $id, $offsetMillis / 1000);
+      }
+
+      $response = new StdClass();
+      $response->setPlayedSecondsResult = new StdClass();
+      return $response;
+    }
+
     function reportPlaySeconds($params) {
       $id = $params->id;
       $offsetMillis = $params->offsetMillis;

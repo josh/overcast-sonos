@@ -70,6 +70,7 @@
       <input type="hidden" name="presentationMapVersion" value="0">
       <input type="hidden" name="presentationMapUri" value="">
       <input type="hidden" name="containerType" value="SoundLab">
+      <input type="hidden" name="caps" value="logging">
       <input type="hidden" name="caps" value="playbackLogging">
     </form>
 
