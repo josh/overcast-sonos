@@ -117,7 +117,15 @@
       $offsetMillis = $params->offsetMillis;
 
       if ($offsetMillis) {
-        updateEpisodeProgress($this->sessionId, $id, $offsetMillis / 1000);
+        $episode = fetchEpisode($id);
+        $podcast = fetchPodcast($episode->podcastId);
+
+        $seconds = $offsetMillis / 1000;
+        if ($seconds > $podcast->episodeDurations[$id] - 3) {
+          $seconds = 2147483647;
+        }
+
+        updateEpisodeProgress($this->sessionId, $id, $seconds);
       }
 
       $response = new StdClass();
