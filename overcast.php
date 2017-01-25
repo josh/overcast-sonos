@@ -18,6 +18,16 @@
     }
   }
 
+  function encrypt($data, $key) {
+    $iv = openssl_random_pseudo_bytes(16);
+    return $iv . ":" . openssl_encrypt($data, 'AES-256-CBC', $key, true, $iv);
+  }
+
+  function decrypt($data, $key) {
+    $iv = substr($data, 0, 16);
+    return openssl_decrypt(substr($data, 17), 'AES-256-CBC', $key, true, $iv);
+  }
+
   class Podcast {
     public $id;
     public $title;
@@ -61,9 +71,11 @@
 
     $key = "overcast:fetchAccount:" . sha1($token);
     $body = $memcache->get($key);
-    if (!$body) {
+    if ($body) {
+      $body = decrypt($body, $token);
+    } else {
       $body = fetch("https://overcast.fm/podcasts", $token);
-      $memcache->set($key, $body, time() + 300);
+      $memcache->set($key, encrypt($body, $token), time() + 300);
     }
 
     libxml_use_internal_errors(true);
@@ -205,7 +217,7 @@
     $progress->position = $position;
 
     $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
-    $memcache->set($key, serialize($progress), time() + 3600);
+    $memcache->set($key, encrypt(serialize($progress), $token), time() + 3600);
 
     return $progress;
   }
@@ -216,7 +228,7 @@
     $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
     $rawProgress = $memcache->get($key);
     $progress = $rawProgress ?
-      unserialize($rawProgress) :
+      decrypt(unserialize($rawProgress), $token) :
       fetchEpisodeProgress($token, $id);
 
     $episode = fetchEpisode($id);
@@ -242,7 +254,7 @@
     $progress->position = (int)$position;
 
     $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
-    $memcache->set($key, serialize($progress), time() + 3600);
+    $memcache->set($key, encrypt(serialize($progress), $token), time() + 3600);
   }
 
   function login($email, $password) {
