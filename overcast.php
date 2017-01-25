@@ -59,7 +59,7 @@
   function fetchAccount($token) {
     global $memcache;
 
-    $key = "overcast:fetchAccount:$token";
+    $key = "overcast:fetchAccount:" . sha1($token);
     $body = $memcache->get($key);
     if (!$body) {
       $body = fetch("https://overcast.fm/podcasts", $token);
@@ -204,7 +204,7 @@
     $progress->version = $version;
     $progress->position = $position;
 
-    $key = "overcast:fetchEpisodeProgress:$token:$id";
+    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
     $memcache->set($key, serialize($progress), time() + 3600);
 
     return $progress;
@@ -213,7 +213,7 @@
   function updateEpisodeProgress($token, $id, $position) {
     global $memcache;
 
-    $key = "overcast:fetchEpisodeProgress:$token:$id";
+    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
     $rawProgress = $memcache->get($key);
     $progress = $rawProgress ?
       unserialize($rawProgress) :
@@ -241,7 +241,7 @@
     $progress->version = (int)$version;
     $progress->position = (int)$position;
 
-    $key = "overcast:fetchEpisodeProgress:$token:$id";
+    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
     $memcache->set($key, serialize($progress), time() + 3600);
   }
 
