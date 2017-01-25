@@ -216,7 +216,7 @@
     $progress->version = $version;
     $progress->position = $position;
 
-    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
+    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id");
     $memcache->set($key, encrypt(serialize($progress), $token), time() + 3600);
 
     return $progress;
@@ -225,7 +225,7 @@
   function updateEpisodeProgress($token, $id, $position) {
     global $memcache;
 
-    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
+    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id");
     $rawProgress = $memcache->get($key);
     $progress = $rawProgress ?
       decrypt(unserialize($rawProgress), $token) :
@@ -253,7 +253,7 @@
     $progress->version = (int)$version;
     $progress->position = (int)$position;
 
-    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id")
+    $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id");
     $memcache->set($key, encrypt(serialize($progress), $token), time() + 3600);
   }
 
