@@ -233,7 +233,7 @@
     $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id");
     $rawProgress = $memcache->get($key);
     $progress = $rawProgress ?
-      decrypt(unserialize($rawProgress), $token) :
+      unserialize(decrypt($rawProgress, $token)) :
       fetchEpisodeProgress($token, $id);
 
     $episode = fetchEpisode($id);
