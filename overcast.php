@@ -225,6 +225,11 @@
   function updateEpisodeProgress($token, $id, $position) {
     global $memcache;
 
+    if ($position == 2147483647) {
+      $key = "overcast:fetchAccount:" . sha1($token);
+      $body = $memcache->delete($key);
+    }
+
     $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id");
     $rawProgress = $memcache->get($key);
     $progress = $rawProgress ?
