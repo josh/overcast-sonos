@@ -38,6 +38,31 @@
 
     <hr class="featurette-divider">
 
+    <?php
+      $host = $_SERVER['HTTP_HOST'];
+      if (preg_match('/^\d+\.\d+\.\d+\.\d+/', $host) === 1) {
+        $httpOrigin = $httpsOrigin = "http://$host";
+      } else {
+        $httpOrigin = "http://$host";
+        $httpsOrigin = "https://$host";
+      }
+
+      $data = array(
+        'sid' => '255',
+        'name' => 'Overcast',
+        'uri' => "$httpOrigin/smapi.php",
+        'secureUri' => "$httpsOrigin/smapi.php",
+        'pollInterval' => '30',
+        'authType' => 'UserId',
+        'stringsVersion' => '1',
+        'stringsUri' => "$httpOrigin/strings.xml",
+        'presentationMapVersion' => '0',
+        'presentationMapUri' => '',
+        'containerType' => 'SoundLab',
+        'caps' => ['logging', 'playbackLogging']
+      )
+    ?>
+
     <div class="row featurette">
       <div class="col-md-7">
         <h2 class="featurette-heading">Configure customSD</h2>
@@ -51,35 +76,33 @@
             <button class="btn btn-default" type="submit">Register Service</button>
           </span>
         </form>
+        <hr>
+
+        <h4>Didn't work?</h4>
+        <p>Alternatively you can run this <code>curl</code> command in the terminal.</p>
+        <?php
+          $encoded_data = http_build_query($data);
+          $encoded_data = preg_replace('/%5B[0-9]+%5D/', '', $encoded_data);
+          $cmd = "curl 'http://\$IP:1400/customsd' --data '$encoded_data'"
+        ?>
+        <p>$ <input type="text" readonly class="shell-example" id="curl-example" data-original="<?= htmlentities($cmd); ?>" value="<?= htmlentities($cmd); ?>"></p>
       </div>
+
       <div class="col-md-5">
         <iframe class="img-responsive center-block" id="customsd" name="customsd"></iframe>
       </div>
     </div>
 
-    <?php
-      $host = $_SERVER['HTTP_HOST'];
-      if (preg_match('/^\d+\.\d+\.\d+\.\d+/', $host) === 1) {
-        $httpOrigin = $httpsOrigin = "http://$host";
-      } else {
-        $httpOrigin = "http://$host";
-        $httpsOrigin = "https://$host";
-      }
-    ?>
-    <form id="customsd-form" method="POST" target="customsd" hidden>
-      <input type="hidden" name="sid" value="255">
-      <input type="hidden" name="name" value="Overcast">
-      <input type="hidden" name="uri" value="<?= $httpOrigin ?>/smapi.php">
-      <input type="hidden" name="secureUri" value="<?= $httpsOrigin ?>/smapi.php">
-      <input type="hidden" name="pollInterval" value="30">
-      <input type="hidden" name="authType" value="UserId">
-      <input type="hidden" name="stringsVersion" value="1">
-      <input type="hidden" name="stringsUri" value="<?= $httpOrigin ?>/strings.xml">
-      <input type="hidden" name="presentationMapVersion" value="0">
-      <input type="hidden" name="presentationMapUri" value="">
-      <input type="hidden" name="containerType" value="SoundLab">
-      <input type="hidden" name="caps" value="logging">
-      <input type="hidden" name="caps" value="playbackLogging">
+    <form id="customsd-form" method="POST" target="customsd" xhidden>
+      <?php foreach($data as $name => $values): ?>
+        <?php if (is_array($values)): ?>
+          <?php foreach($values as $value): ?>
+            <input type="hidden" name="<?= $name ?>" value="<?= $value ?>">
+          <?php endforeach; ?>
+        <?php else: ?>
+          <input type="hidden" name="<?= $name ?>" value="<?= $values ?>">
+        <?php endif; ?>
+      <?php endforeach; ?>
     </form>
 
     <hr class="featurette-divider">

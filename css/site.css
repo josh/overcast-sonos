@@ -15,3 +15,7 @@ body {
   line-height: 1;
   letter-spacing: -1px;
 }
+
+.shell-example {
+  width: 600px;
+}
