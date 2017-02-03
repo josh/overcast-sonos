@@ -205,8 +205,6 @@
     }
 
     function findPodcastMediaMetadata($id) {
-      $start = microtime(true);
-
       $podcast = fetchPodcast($id);
       $media = new StdClass();
       $media->id = $podcast->id;
@@ -214,16 +212,10 @@
       $media->displayType = "";
       $media->title = $podcast->title;
       $media->albumArtURI = $podcast->imageURL;
-
-      $duration = microtime(true) - $start;
-      error_log("SOAP findPodcastMediaMetadata " . round($duration * 1000) . "ms");
-
       return $media;
     }
 
     function findEpisodeMediaMetadata($id, $podcast) {
-      $start = microtime(true);
-
       $episode = fetchEpisode($id);
       if (!$podcast) {
         $podcast = fetchPodcast($episode->podcastId);
@@ -245,9 +237,6 @@
       $media->trackMetadata->artist = $podcast->title;
       $media->trackMetadata->albumId = $podcast->id;
       $media->trackMetadata->album = $podcast->title;
-
-      $duration = microtime(true) - $start;
-      error_log("SOAP findEpisodeMediaMetadata " . round($duration * 1000) . "ms");
 
       return $media;
     }
