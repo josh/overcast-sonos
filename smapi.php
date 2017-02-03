@@ -5,6 +5,8 @@
     private $sessionId;
 
     function getSessionId($params) {
+      error_log("SOAP getSessionId");
+
       $username = $params->username;
       $password = $params->password;
 
@@ -25,6 +27,8 @@
     }
 
     function getLastUpdate() {
+      $start = microtime(true);
+
       $lastUpdate = getAccountLastUpdate($this->sessionId);
 
       $response = new StdClass();
@@ -32,10 +36,16 @@
       $response->getLastUpdateResult->favorites = $lastUpdate;
       $response->getLastUpdateResult->catalog = $lastUpdate;
       $response->getLastUpdateResult->pollInterval = 300;
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP getLastUpdate " . round($duration * 1000) . "ms");
+
       return $response;
     }
 
     function getMetadata($params) {
+      $start = microtime(true);
+
       $count = $params->count;
       $id = $params->id;
       $index = $params->index;
@@ -86,18 +96,29 @@
       $response->getMetadataResult->mediaCollection = $mediaCollection;
       $response->getMetadataResult->mediaMetadata = $mediaMetadata;
 
+      $duration = microtime(true) - $start;
+      error_log("SOAP getMetadata " . round($duration * 1000) . "ms");
+
       return $response;
     }
 
     function getMediaMetadata($params) {
+      $start = microtime(true);
+
       $id = $params->id;
 
       $response = new StdClass();
       $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id, NULL);
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP getMediaMetadata " . round($duration * 1000) . "ms");
+
       return $response;
     }
 
     function getMediaURI($params) {
+      $start = microtime(true);
+
       $id = $params->id;
 
       $response = new StdClass();
@@ -111,10 +132,15 @@
         $response->positionInformation->offsetMillis = $progress->position * 1000;
       }
 
+      $duration = microtime(true) - $start;
+      error_log("SOAP getMediaURI " . round($duration * 1000) . "ms");
+
       return $response;
     }
 
     function setPlayedSeconds($params) {
+      $start = microtime(true);
+
       $id = $params->id;
       $offsetMillis = $params->offsetMillis;
 
@@ -132,10 +158,16 @@
 
       $response = new StdClass();
       $response->setPlayedSecondsResult = new StdClass();
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP setPlayedSeconds " . round($duration * 1000) . "ms");
+
       return $response;
     }
 
     function reportPlaySeconds($params) {
+      $start = microtime(true);
+
       $id = $params->id;
       $offsetMillis = $params->offsetMillis;
 
@@ -146,10 +178,16 @@
       $response = new StdClass();
       $response->reportPlaySecondsResult = new StdClass();
       $response->reportPlaySecondsResult->interval = 10;
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP reportPlaySeconds " . round($duration * 1000) . "ms");
+
       return $response;
     }
 
     function reportPlayStatus($params) {
+      $start = microtime(true);
+
       $id = $params->id;
       $offsetMillis = $params->offsetMillis;
 
@@ -159,10 +197,16 @@
 
       $response = new StdClass();
       $response->reportPlayStatusResult = new StdClass();
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP reportPlayStatus " . round($duration * 1000) . "ms");
+
       return $response;
     }
 
     function findPodcastMediaMetadata($id) {
+      $start = microtime(true);
+
       $podcast = fetchPodcast($id);
       $media = new StdClass();
       $media->id = $podcast->id;
@@ -170,10 +214,16 @@
       $media->displayType = "";
       $media->title = $podcast->title;
       $media->albumArtURI = $podcast->imageURL;
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP findPodcastMediaMetadata " . round($duration * 1000) . "ms");
+
       return $media;
     }
 
     function findEpisodeMediaMetadata($id, $podcast) {
+      $start = microtime(true);
+
       $episode = fetchEpisode($id);
       if (!$podcast) {
         $podcast = fetchPodcast($episode->podcastId);
@@ -195,6 +245,10 @@
       $media->trackMetadata->artist = $podcast->title;
       $media->trackMetadata->albumId = $podcast->id;
       $media->trackMetadata->album = $podcast->title;
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP findEpisodeMediaMetadata " . round($duration * 1000) . "ms");
+
       return $media;
     }
   }
