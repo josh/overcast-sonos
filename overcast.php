@@ -73,14 +73,13 @@
   function fetchAccount($token) {
     global $memcache;
 
-    $key = "overcast:fetchAccount:" . sha1($token);
-    $body = $memcache->get($key);
-    if ($body) {
-      $body = decrypt($body, $token);
-    } else {
-      $body = fetch("https://overcast.fm/podcasts", $token);
-      $memcache->set($key, encrypt($body, $token), time() + 300);
+    $key = "overcast:fetchAccount:v2:" . sha1($token);
+    $data = $memcache->get($key);
+    if ($data) {
+      return unserialize(decrypt($data, $token));
     }
+
+    $body = fetch("https://overcast.fm/podcasts", $token);
 
     libxml_use_internal_errors(true);
 
@@ -105,18 +104,21 @@
       $result->episodeIDs[] = $id;
     }
 
+    $memcache->set($key, encrypt(serialize($result), $token), time() + 150);
+
     return $result;
   }
 
   function fetchPodcast($id) {
     global $memcache;
 
-    $key = "overcast:fetchPodcast:$id";
-    $body = $memcache->get($key);
-    if (!$body) {
-      $body = fetch("https://overcast.fm/" . $id);
-      $memcache->set($key, $body, time() + 3600);
+    $key = "overcast:fetchPodcast:v2:$id";
+    $data = $memcache->get($key);
+    if ($data) {
+      return unserialize($data);
     }
+
+    $body = fetch("https://overcast.fm/" . $id);
 
     libxml_use_internal_errors(true);
 
@@ -151,18 +153,21 @@
       }
     }
 
+    $memcache->set($key, serialize($podcast), time() + 86400);
+
     return $podcast;
   }
 
   function fetchEpisode($id) {
     global $memcache;
 
-    $key = "overcast:fetchEpisode:$id";
-    $body = $memcache->get($key);
-    if (!$body) {
-      $body = fetch("https://overcast.fm/" . $id);
-      $memcache->set($key, $body, time() + 86400);
+    $key = "overcast:fetchEpisode:v2:$id";
+    $data = $memcache->get($key);
+    if ($data) {
+      return unserialize($data);
     }
+
+    $body = fetch("https://overcast.fm/" . $id);
 
     libxml_use_internal_errors(true);
 
@@ -191,6 +196,8 @@
     $source = $xpath->query('//audio/source')[0];
     $episode->mimeType = $source->getAttribute('type');
     $episode->url = $source->getAttribute('src');
+
+    $memcache->set($key, serialize($episode));
 
     return $episode;
   }
@@ -230,7 +237,7 @@
     global $memcache;
 
     if ($position == 2147483647) {
-      $key = "overcast:fetchAccount:" . sha1($token);
+      $key = "overcast:fetchAccount:v2:" . sha1($token);
       $body = $memcache->delete($key);
     }
 
