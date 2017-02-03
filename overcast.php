@@ -66,6 +66,10 @@
     return $body;
   }
 
+  function getAccountLastUpdate($token) {
+    return sha1(serialize(fetchAccount($token)));
+  }
+
   function fetchAccount($token) {
     global $memcache;
 

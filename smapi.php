@@ -25,11 +25,13 @@
     }
 
     function getLastUpdate() {
+      $lastUpdate = getAccountLastUpdate($this->sessionId);
+
       $response = new StdClass();
       $response->getLastUpdateResult = new StdClass();
-      $response->getLastUpdateResult->favorites = 0;
-      $response->getLastUpdateResult->catalog = time();
-      $response->getLastUpdateResult->pollInterval = 30;
+      $response->getLastUpdateResult->favorites = $lastUpdate;
+      $response->getLastUpdateResult->catalog = $lastUpdate;
+      $response->getLastUpdateResult->pollInterval = 300;
       return $response;
     }
 
