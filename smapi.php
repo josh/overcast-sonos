@@ -79,12 +79,12 @@
         }
       } else {
         $podcast = fetchPodcast($id);
-        // $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
+        $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
 
         foreach ($podcast->episodeIDs as $episodeID) {
-          // if (in_array($episodeID, $activeEpisodeIDs)) {
+          if (in_array($episodeID, $activeEpisodeIDs)) {
             $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, $podcast);
-          // }
+          }
         }
       }
 
