@@ -1,0 +1,8 @@
+{
+  "name": "Overcast + Sonos",
+  "description": "Listen to your Overcast podcasts on Sonos.",
+  "repository": "https://github.com/josh/overcast-sonos",
+  "keywords": ["overcast", "sonos"],
+  "success_url": "/setup.php",
+  "addons": ["memcachier:dev"]
+}

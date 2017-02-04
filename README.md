@@ -27,3 +27,9 @@ Keep in mind that only a one custom service can be registered per network. Becau
 #### Why isn't there a nice Overcast logo in the Sonos app?
 
 Only officially registered services can [set a custom service logo](http://musicpartners.sonos.com/node/377).
+
+#### Can I run my own service?
+
+Yeah! If you want to make modifications or want to control your own instance for privacy reasons, you can simply use this "Deploy to Heroku" button to quickly set up your own app in minutes.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/josh/overcast-sonos)
