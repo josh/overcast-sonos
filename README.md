@@ -2,10 +2,10 @@
 
 Listen to your Overcast podcasts on Sonos.
 
+Just want to try it out? [Follow these setup instructions to register the Overcast service on your Sonos system](http://overcast-sonos.herokuapp.com/setup.php).
+
 <img src="images/playlist.png" width=400 height=688>
 <img src="images/player.png" width=400 height=688>
-
-Just want to try it out? [Follow these setup instructions to register the Overcast service on your Sonos system](http://overcast-sonos.herokuapp.com/setup.php).
 
 ## Questions and Answers
 
