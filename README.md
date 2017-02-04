@@ -20,9 +20,9 @@ This service is limited to the same functionality as the [overcast.fm website](h
 
 #### What does "registering a custom service" do?
 
-[Sonos allows a unreviewed custom service to be registered for testing and development purposes](http://musicpartners.sonos.com/docs?q=node/134). Its similar to "sideloading" an iOS app via Xcode. Typically, all services are reviewed and registered with Sonos.
+[Sonos allows a unreviewed custom service to be registered for testing and development purposes](http://musicpartners.sonos.com/docs?q=node/134). It's similar to "sideloading" an iOS app via Xcode. Typically, all services are reviewed and registered with Sonos.
 
-Keep in mind that only a one custom service can be registered per network. Because of these limitation, you can not use this Overcast service and the [NPR One service](https://michaeldick.me/sonos-nprone/) at the same time.
+Keep in mind that only one custom service can be registered per network. Because of this limitation, you can't use this Overcast service and another like the [NPR One service](https://michaeldick.me/sonos-nprone/) at the same time.
 
 #### Why isn't there a nice Overcast logo in the Sonos app?
 
