@@ -31,6 +31,10 @@ Keep in mind that only one custom service can be registered per network. Because
 
 Only officially registered services can [set a custom service logo](http://musicpartners.sonos.com/node/377).
 
+#### Why PHP?
+
+I thought it would be fun and maybe @marcoarment would take the source and make it official.
+
 #### Can I run my own service?
 
 Yeah! If you want to make modifications or want to control your own instance for privacy reasons, you can simply use this "Deploy to Heroku" button to quickly set up your own app in minutes.
