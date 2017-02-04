@@ -10,6 +10,10 @@ Just want to try it out? [Follow these setup instructions to register the unoffi
 
 No.
 
+#### Do I have to run this thing on my computer?
+
+Unlike [AirSonos](http://airsonos.stephenwan.net/), you don't need to run any additional programs on your computer or network. A public instance of the service is already set up on Heroku.
+
 #### Why can't I see my playlists?
 
 This service is limited to the same functionality as the [overcast.fm website](https://overcast.fm/), which only supports the "All Active Episodes" playlist.
