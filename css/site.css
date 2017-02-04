@@ -3,7 +3,11 @@ body {
 }
 
 .header {
-  padding: 40px 15px;
+  text-align: center;
+}
+
+footer {
+  padding: 100px 0 15px;
   text-align: center;
 }
 
@@ -17,7 +21,7 @@ body {
 }
 
 .shell-example {
-  width: 600px;
+  width: 500px;
 }
 
 .github-corner:hover .octo-arm {

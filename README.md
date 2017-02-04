@@ -1,4 +1,8 @@
-# Overcast Podcast Service for Sonos
+# Unofficial Overcast + Sonos integration
+
+Listen to your Overcast podcasts on Sonos.
+
+[Follow these setup instructions to register the unofficial Overcast service on your Sonos system](http://overcast-sonos.herokuapp.com/setup.php).
 
 ## Shortcomings
 

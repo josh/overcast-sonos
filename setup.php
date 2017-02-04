@@ -12,7 +12,7 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/site.css">
-  <title>Overcast + Sonos</title>
+  <title>Unofficial Overcast + Sonos integration</title>
 </head>
 <body>
   <a href="https://github.com/josh/overcast-sonos" class="github-corner" aria-label="View source on Github">
@@ -25,8 +25,8 @@
 
   <div class="container">
     <div class="header">
-      <h1>Overcast + Sonos</h1>
-      <p class="lead">Listen to your Overcast podcasts on Sonos.</p>
+      <h1>Unofficial Overcast + Sonos integration</h1>
+      <p class="lead">Follow these setup instructions to register the unofficial Overcast service on your Sonos system.</p>
     </div>
 
     <hr class="featurette-divider">
@@ -73,7 +73,7 @@
 
     <div class="row featurette">
       <div class="col-md-7">
-        <h2 class="featurette-heading">Configure customSD</h2>
+        <h2 class="featurette-heading">Register the custom service</h2>
         <p class="lead">
           Enter your Sonos IP here and click <strong>Register Service</strong>. The window on the right should say <code>success!</code> if the service was successfully installed.
         </p>
@@ -126,6 +126,10 @@
         <img class="img-responsive center-block" src="images/overcast-service.png">
       </div>
     </div>
+
+    <footer>
+      <p class="text-muted">Overcast is a registered trademark of Overcast Radio, LLC. Sonos is a registered trademark of Sonos. Inc.</p>
+    </footer>
   </div>
 
   <script src="js/site.js" async></script>
