@@ -2,7 +2,8 @@
 
 Listen to your Overcast podcasts on Sonos.
 
-![](images/playlist.png) ![](images/player.png)
+<img src="/josh/overcast-sonos/raw/master/images/playlist.png" width=400 height=688>
+<img src="/josh/overcast-sonos/raw/master/images/player.png" width=400 height=688>
 
 Just want to try it out? [Follow these setup instructions to register the Overcast service on your Sonos system](http://overcast-sonos.herokuapp.com/setup.php).
 
