@@ -33,7 +33,7 @@ Only officially registered services can [set a custom service logo](http://music
 
 #### Why PHP?
 
-I thought it would be fun and maybe @marcoarment would take the source and make it official.
+I thought it would be fun and maybe [@marcoarment](https://github.com/marcoarment) would take the source and make it official.
 
 #### Can I run my own service?
 
