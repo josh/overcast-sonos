@@ -227,16 +227,19 @@
       $media->mimeType = $episode->mimeType;
       $media->itemType = "track";
       $media->title = $episode->title;
-      $media->summary = ""; // $episode->description;
+      $media->summary = "";
       $media->trackMetadata = new StdClass();
       $media->trackMetadata->canPlay = true;
-      $media->trackMetadata->canResume = true;
       $media->trackMetadata->albumArtURI = $episode->imageURL;
-      $media->trackMetadata->duration = $podcast->episodeDurations[$id];
       $media->trackMetadata->artistId = $podcast->id;
       $media->trackMetadata->artist = $podcast->title;
       $media->trackMetadata->albumId = $podcast->id;
       $media->trackMetadata->album = $podcast->title;
+
+      if (isset($podcast->episodeDurations[$id])) {
+        $media->trackMetadata->canResume = true;
+        $media->trackMetadata->duration = $podcast->episodeDurations[$id];
+      }
 
       return $media;
     }
