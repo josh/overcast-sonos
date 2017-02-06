@@ -39,9 +39,11 @@
   class Episode {
     public $id;
     public $podcastId;
+    public $podcastTitle;
     public $title;
     public $description;
     public $imageURL;
+    public $duration;
     public $mimeType;
     public $url;
     public $itemId;
@@ -161,7 +163,7 @@
   function fetchEpisode($id) {
     global $memcache;
 
-    $key = "overcast:fetchEpisode:v2:$id";
+    $key = "overcast:fetchEpisode:v3:$id";
     $data = $memcache->get($key);
     if ($data) {
       return unserialize($data);
@@ -180,6 +182,17 @@
     $episode->id = $id;
 
     $episode->podcastId = substr($xpath->query('//a[@class="ocbutton"]')[0]->getAttribute('href'), 1);
+
+    $podcast = fetchPodcast($episode->podcastId);
+
+    if (empty($podcast->episodeDurations[$id])) {
+      $key = "overcast:fetchPodcast:v2:" . $episode->podcastId;
+      $memcache->delete($key);
+      $podcast = fetchPodcast($episode->podcastId);
+    }
+
+    $episode->duration = $podcast->episodeDurations[$id];
+    $episode->podcastTitle = $podcast->title;
 
     $episode->title = $xpath->query('//div[@class="title"]')[0]->textContent;
     $episode->description = $xpath->query('//meta[@name="og:description"]')[0]->getAttribute('content');
@@ -238,7 +251,7 @@
 
     if ($position == 2147483647) {
       $key = "overcast:fetchAccount:v2:" . sha1($token);
-      $body = $memcache->delete($key);
+      $memcache->delete($key);
     }
 
     $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id");

@@ -71,7 +71,7 @@
         $episodeIDs = fetchAccount($this->sessionId)->episodeIDs;
 
         foreach ($episodeIDs as $episodeID) {
-          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, NULL);
+          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID);
         }
       } elseif ($id == "podcasts") {
         foreach (fetchAccount($this->sessionId)->podcastIDs as $podcastID) {
@@ -83,7 +83,7 @@
 
         foreach ($podcast->episodeIDs as $episodeID) {
           if (in_array($episodeID, $activeEpisodeIDs)) {
-            $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, $podcast);
+            $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID);
           }
         }
       }
@@ -108,7 +108,7 @@
       $id = $params->id;
 
       $response = new StdClass();
-      $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id, NULL);
+      $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id);
 
       $duration = microtime(true) - $start;
       error_log("SOAP getMediaMetadata " . round($duration * 1000) . "ms");
@@ -146,10 +146,8 @@
 
       if ($offsetMillis) {
         $episode = fetchEpisode($id);
-        $podcast = fetchPodcast($episode->podcastId);
-
         $seconds = $offsetMillis / 1000;
-        if ($seconds > $podcast->episodeDurations[$id] - 3) {
+        if ($seconds > $episode->duration - 3) {
           $seconds = 2147483647;
         }
 
@@ -215,11 +213,8 @@
       return $media;
     }
 
-    function findEpisodeMediaMetadata($id, $podcast) {
+    function findEpisodeMediaMetadata($id) {
       $episode = fetchEpisode($id);
-      if (!$podcast) {
-        $podcast = fetchPodcast($episode->podcastId);
-      }
 
       $media = new StdClass();
       $media->id = $episode->id;
@@ -231,14 +226,14 @@
       $media->trackMetadata = new StdClass();
       $media->trackMetadata->canPlay = true;
       $media->trackMetadata->albumArtURI = $episode->imageURL;
-      $media->trackMetadata->artistId = $podcast->id;
-      $media->trackMetadata->artist = $podcast->title;
-      $media->trackMetadata->albumId = $podcast->id;
-      $media->trackMetadata->album = $podcast->title;
+      $media->trackMetadata->artistId = $episode->podcastId;
+      $media->trackMetadata->artist = $episode->podcastTitle;
+      $media->trackMetadata->albumId = $episode->podcastId;
+      $media->trackMetadata->album = $episode->podcastTitle;
 
-      if (isset($podcast->episodeDurations[$id])) {
+      if (isset($episode->duration)) {
         $media->trackMetadata->canResume = true;
-        $media->trackMetadata->duration = $podcast->episodeDurations[$id];
+        $media->trackMetadata->duration = $episode->duration;
       }
 
       return $media;
