@@ -66,7 +66,7 @@
         'stringsUri' => "$httpOrigin/strings.xml",
         'presentationMapVersion' => '0',
         'presentationMapUri' => '',
-        'containerType' => 'SoundLab',
+        'containerType' => 'MService',
         'caps' => ['logging', 'playbackLogging']
       )
     ?>
