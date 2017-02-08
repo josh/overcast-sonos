@@ -90,11 +90,11 @@
 
       $response = new StdClass();
       $response->getMetadataResult = new StdClass();
-      $response->getMetadataResult->index = 0;
-      $response->getMetadataResult->count = count($mediaCollection) + count($mediaMetadata);
+      $response->getMetadataResult->index = $index;
       $response->getMetadataResult->total = count($mediaCollection) + count($mediaMetadata);
-      $response->getMetadataResult->mediaCollection = $mediaCollection;
-      $response->getMetadataResult->mediaMetadata = $mediaMetadata;
+      $response->getMetadataResult->count = min($count, $response->getMetadataResult->total);
+      $response->getMetadataResult->mediaCollection = array_slice($mediaCollection, $index, $count);
+      $response->getMetadataResult->mediaMetadata = array_slice($mediaMetadata, $index, $count);
 
       $duration = microtime(true) - $start;
       error_log("SOAP getMetadata " . round($duration * 1000) . "ms");
