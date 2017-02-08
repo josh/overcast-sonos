@@ -186,8 +186,7 @@
     $podcast = fetchPodcast($episode->podcastId);
 
     if (empty($podcast->episodeDurations[$id])) {
-      $key = "overcast:fetchPodcast:v2:" . $episode->podcastId;
-      $memcache->delete($key);
+      $memcache->delete("overcast:fetchPodcast:v2:" . $episode->podcastId);
       $podcast = fetchPodcast($episode->podcastId);
     }
 
