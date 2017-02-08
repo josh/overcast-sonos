@@ -147,7 +147,7 @@
       if ($offsetMillis) {
         $episode = fetchEpisode($id);
         $seconds = $offsetMillis / 1000;
-        if ($seconds > $episode->duration - 3) {
+        if (isset($episode->duration) && $seconds > $episode->duration - 3) {
           $seconds = 2147483647;
         }
 

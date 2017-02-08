@@ -191,7 +191,9 @@
       $podcast = fetchPodcast($episode->podcastId);
     }
 
-    $episode->duration = $podcast->episodeDurations[$id];
+    if (isset($podcast->episodeDurations[$id])) {
+      $episode->duration = $podcast->episodeDurations[$id];      
+    }
     $episode->podcastTitle = $podcast->title;
 
     $episode->title = $xpath->query('//div[@class="title"]')[0]->textContent;
