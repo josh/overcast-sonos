@@ -191,7 +191,7 @@
     }
 
     if (isset($podcast->episodeDurations[$id])) {
-      $episode->duration = $podcast->episodeDurations[$id];      
+      $episode->duration = $podcast->episodeDurations[$id];
     }
     $episode->podcastTitle = $podcast->title;
 
