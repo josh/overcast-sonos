@@ -226,8 +226,6 @@
       $media->trackMetadata = new StdClass();
       $media->trackMetadata->canPlay = true;
       $media->trackMetadata->albumArtURI = $episode->imageURL;
-      $media->trackMetadata->artistId = $episode->podcastId;
-      $media->trackMetadata->artist = $episode->podcastTitle;
       $media->trackMetadata->albumId = $episode->podcastId;
       $media->trackMetadata->album = $episode->podcastTitle;
 
