@@ -71,7 +71,7 @@
         $episodeIDs = fetchAccount($this->sessionId)->episodeIDs;
 
         foreach ($episodeIDs as $episodeID) {
-          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID);
+          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, true);
         }
       } elseif ($id == "podcasts") {
         foreach (fetchAccount($this->sessionId)->podcastIDs as $podcastID) {
@@ -83,7 +83,7 @@
 
         foreach ($podcast->episodeIDs as $episodeID) {
           if (in_array($episodeID, $activeEpisodeIDs)) {
-            $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID);
+            $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, true);
           }
         }
       }
@@ -108,7 +108,9 @@
       $id = $params->id;
 
       $response = new StdClass();
-      $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id);
+
+      $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
+      $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id, in_array($id, $activeEpisodeIDs));
 
       $duration = microtime(true) - $start;
       error_log("SOAP getMediaMetadata " . round($duration * 1000) . "ms");
@@ -147,13 +149,45 @@
       $response->getExtendedMetadataResult = new StdClass();
 
       if (substr($id, 0, 1) == '+') {
-        $response->getExtendedMetadataResult->mediaMetadata = $this->findEpisodeMediaMetadata($id);
+        $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
+        $response->getExtendedMetadataResult->mediaMetadata = $this->findEpisodeMediaMetadata($id, in_array($id, $activeEpisodeIDs));
       } else {
         $response->getExtendedMetadataResult->mediaCollection = $this->findPodcastMediaMetadata($id);
       }
 
       $duration = microtime(true) - $start;
       error_log("SOAP getExtendedMetadata " . round($duration * 1000) . "ms");
+
+      return $response;
+    }
+
+    function createItem($params) {
+      $start = microtime(true);
+
+      $id = $params->favorite;
+
+      $response = new StdClass();
+      $response->createItemResult = $id;
+
+      addEpisode($this->sessionId, $id);
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP createItem " . round($duration * 1000) . "ms");
+
+      return $response;
+    }
+
+    function deleteItem($params) {
+      $start = microtime(true);
+
+      $id = $params->favorite;
+
+      $response = new StdClass();
+
+      deleteEpisode($this->sessionId, $id);
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP createItem " . round($duration * 1000) . "ms");
 
       return $response;
     }
@@ -230,14 +264,17 @@
       $media->displayType = "";
       $media->title = $podcast->title;
       $media->albumArtURI = $podcast->imageURL;
+      $media->canAddToFavorites = false;
+      $media->containsFavorite = true;
       return $media;
     }
 
-    function findEpisodeMediaMetadata($id) {
+    function findEpisodeMediaMetadata($id, $favorite) {
       $episode = fetchEpisode($id);
 
       $media = new StdClass();
       $media->id = $episode->id;
+      $media->isFavorite = $favorite;
       $media->displayType = "";
       $media->mimeType = $episode->mimeType;
       $media->itemType = "track";
@@ -245,6 +282,7 @@
       $media->summary = "";
       $media->trackMetadata = new StdClass();
       $media->trackMetadata->canPlay = true;
+      $media->trackMetadata->canAddToFavorites = true;
       $media->trackMetadata->albumArtURI = $episode->imageURL;
       $media->trackMetadata->albumId = $episode->podcastId;
       $media->trackMetadata->album = $episode->podcastTitle;
