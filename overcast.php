@@ -111,6 +111,13 @@
     return $result;
   }
 
+  function invalidateAccountCache($token) {
+    global $memcache;
+
+    $key = "overcast:fetchAccount:v2:" . sha1($token);
+    $memcache->delete($key);
+  }
+
   function fetchPodcast($id) {
     global $memcache;
 
@@ -216,6 +223,17 @@
     return $episode;
   }
 
+  function addEpisode($token, $id) {
+    updateEpisodeProgress($token, $id, 0);
+    invalidateAccountCache($token);
+  }
+
+  function deleteEpisode($token, $id) {
+    $episode = fetchEpisode($id);
+    fetch("https://overcast.fm/podcasts/delete_item/" . $episode->itemId, $token);
+    invalidateAccountCache($token);
+  }
+
   function fetchEpisodeProgress($token, $id) {
     global $memcache;
 
@@ -251,8 +269,7 @@
     global $memcache;
 
     if ($position == 2147483647) {
-      $key = "overcast:fetchAccount:v2:" . sha1($token);
-      $memcache->delete($key);
+      invalidateAccountCache($token);
     }
 
     $key = "overcast:fetchEpisodeProgress:" . sha1("$token:$id");
