@@ -67,7 +67,7 @@
         'presentationMapVersion' => '0',
         'presentationMapUri' => '',
         'containerType' => 'MService',
-        'caps' => ['logging', 'playbackLogging']
+        'caps' => ['logging', 'playbackLogging', 'extendedMD']
       )
     ?>
 

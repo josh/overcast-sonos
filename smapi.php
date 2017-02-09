@@ -138,6 +138,26 @@
       return $response;
     }
 
+    function getExtendedMetadata($params) {
+      $start = microtime(true);
+
+      $id = $params->id;
+
+      $response = new StdClass();
+      $response->getExtendedMetadataResult = new StdClass();
+
+      if (substr($id, 0, 1) == '+') {
+        $response->getExtendedMetadataResult->mediaMetadata = $this->findEpisodeMediaMetadata($id);
+      } else {
+        $response->getExtendedMetadataResult->mediaCollection = $this->findPodcastMediaMetadata($id);
+      }
+
+      $duration = microtime(true) - $start;
+      error_log("SOAP getExtendedMetadata " . round($duration * 1000) . "ms");
+
+      return $response;
+    }
+
     function setPlayedSeconds($params) {
       $start = microtime(true);
 
