@@ -260,10 +260,11 @@
       $podcast = fetchPodcast($id);
       $media = new StdClass();
       $media->id = $podcast->id;
-      $media->itemType = "container";
+      $media->itemType = "album";
       $media->displayType = "";
       $media->title = $podcast->title;
       $media->albumArtURI = $podcast->imageURL;
+      $media->canPlay = true;
       $media->canAddToFavorites = false;
       $media->containsFavorite = true;
       return $media;
