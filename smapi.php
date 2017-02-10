@@ -59,6 +59,9 @@
         $media->itemType = "container";
         $media->displayType = "";
         $media->title = "All Active Episodes";
+        $media->canPlay = true;
+        $media->canAddToFavorites = false;
+        $media->containsFavorite = true;
         $mediaCollection[] = $media;
 
         $media = new StdClass();
@@ -66,6 +69,7 @@
         $media->itemType = "container";
         $media->displayType = "";
         $media->title = "Podcasts";
+        $media->canAddToFavorites = false;
         $mediaCollection[] = $media;
       } elseif ($id == "active") {
         $episodeIDs = fetchAccount($this->sessionId)->episodeIDs;
