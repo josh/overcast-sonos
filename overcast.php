@@ -121,6 +121,10 @@
   function fetchPodcast($id) {
     global $memcache;
 
+    if (substr($id, 0, 1) == '+') {
+      throw new Exception("invalid podcast id");
+    }
+
     $key = "overcast:fetchPodcast:v2:$id";
     $data = $memcache->get($key);
     if ($data) {
