@@ -276,7 +276,7 @@
       $media->albumArtURI = $podcast->imageURL;
       $media->canPlay = true;
       $media->canAddToFavorites = false;
-      $media->containsFavorite = true;
+      $media->containsFavorite = false;
       return $media;
     }
 
