@@ -50,10 +50,13 @@
       $id = $params->id;
       $index = $params->index;
 
+      $total = 0;
       $mediaCollection = array();
       $mediaMetadata = array();
 
       if ($id == "root") {
+        $total = 2;
+
         $media = new StdClass();
         $media->id = "active";
         $media->itemType = "container";
@@ -73,32 +76,35 @@
         $mediaCollection[] = $media;
       } elseif ($id == "active") {
         $episodeIDs = fetchAccount($this->sessionId)->episodeIDs;
+        $total = count($episodeIDs);
 
-        foreach ($episodeIDs as $episodeID) {
+        foreach (array_slice($episodeIDs, $index, min($count, 25)) as $episodeID) {
           $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, true);
         }
       } elseif ($id == "podcasts") {
-        foreach (fetchAccount($this->sessionId)->podcastIDs as $podcastID) {
+        $podcastIDs = fetchAccount($this->sessionId)->podcastIDs;
+        $total = count($podcastIDs);
+
+        foreach (array_slice($podcastIDs, $index, min($count, 25)) as $podcastID) {
           $mediaCollection[] = $this->findPodcastMediaMetadata($podcastID);
         }
       } else {
         $podcast = fetchPodcast($id);
         $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
+        $total = count($podcast->episodeIDs);
 
-        foreach ($podcast->episodeIDs as $episodeID) {
-          if (in_array($episodeID, $activeEpisodeIDs)) {
-            $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, true);
-          }
+        foreach (array_slice($podcast->episodeIDs, $index, min($count, 10)) as $episodeID) {
+          $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, in_array($episodeID, $activeEpisodeIDs));
         }
       }
 
       $response = new StdClass();
       $response->getMetadataResult = new StdClass();
       $response->getMetadataResult->index = $index;
-      $response->getMetadataResult->total = count($mediaCollection) + count($mediaMetadata);
-      $response->getMetadataResult->count = min($count, $response->getMetadataResult->total);
-      $response->getMetadataResult->mediaCollection = array_slice($mediaCollection, $index, $count);
-      $response->getMetadataResult->mediaMetadata = array_slice($mediaMetadata, $index, $count);
+      $response->getMetadataResult->total = $total;
+      $response->getMetadataResult->count = count($mediaCollection) + count($mediaMetadata);
+      $response->getMetadataResult->mediaCollection = $mediaCollection;
+      $response->getMetadataResult->mediaMetadata = $mediaMetadata;
 
       $duration = microtime(true) - $start;
       error_log("SOAP getMetadata " . round($duration * 1000) . "ms");
