@@ -81,7 +81,7 @@
         foreach (array_slice($episodeIDs, $index, $count) as $episodeID) {
           $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, true);
 
-          if (microtime(true) - $start > 1000000) break;
+          if (microtime(true) - $start > 1) break;
         }
       } elseif ($id == "podcasts") {
         $podcastIDs = fetchAccount($this->sessionId)->podcastIDs;
@@ -90,7 +90,7 @@
         foreach (array_slice($podcastIDs, $index, $count) as $podcastID) {
           $mediaCollection[] = $this->findPodcastMediaMetadata($podcastID);
 
-          if (microtime(true) - $start > 1000000) break;
+          if (microtime(true) - $start > 1) break;
         }
       } else {
         $podcast = fetchPodcast($id);
@@ -100,7 +100,7 @@
         foreach (array_slice($podcast->episodeIDs, $index, $count) as $episodeID) {
           $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, in_array($episodeID, $activeEpisodeIDs));
 
-          if (microtime(true) - $start > 1000000) break;
+          if (microtime(true) - $start > 1) break;
         }
       }
 
