@@ -64,8 +64,8 @@
         'authType' => 'UserId',
         'stringsVersion' => '1',
         'stringsUri' => "$httpOrigin/strings.xml",
-        'presentationMapVersion' => '0',
-        'presentationMapUri' => '',
+        'presentationMapVersion' => '1',
+        'presentationMapUri' => "$httpOrigin/pmap.xml",
         'containerType' => 'MService',
         'caps' => ['trFavorites', 'alFavorites', 'logging', 'playbackLogging', 'extendedMD']
       )
