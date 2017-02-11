@@ -78,7 +78,7 @@
         $episodeIDs = fetchAccount($this->sessionId)->episodeIDs;
         $total = count($episodeIDs);
 
-        foreach (array_slice($episodeIDs, $index, min($count, 25)) as $episodeID) {
+        foreach (array_slice($episodeIDs, $index, min($count, 10)) as $episodeID) {
           $mediaMetadata[] = $this->findEpisodeMediaMetadata($episodeID, true);
         }
       } elseif ($id == "podcasts") {
