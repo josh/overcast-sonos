@@ -207,7 +207,7 @@
     $episode->description = $xpath->query('//meta[@name="og:description"]')[0]->getAttribute('content');
     $episode->number = array_search($episode->id, array_reverse($podcast->episodeIDs)) + 1;
 
-    preg_match('/^#?(\d+)\s*(:|-|–|—)?\s*/', $episode->title, $matches);
+    preg_match('/^#?(\d+)\s*(:|-|–|—)?\s+/', $episode->title, $matches);
     if (isset($matches[0])) {
       $episode->title = substr($episode->title, strlen($matches[0]));
       $episode->number = (int)$matches[1];
