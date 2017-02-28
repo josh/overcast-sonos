@@ -218,13 +218,7 @@
       $offsetMillis = $params->offsetMillis;
 
       if ($offsetMillis) {
-        $episode = fetchEpisode($id);
-        $seconds = $offsetMillis / 1000;
-        if (isset($episode->duration) && $seconds > $episode->duration - 3) {
-          $seconds = 2147483647;
-        }
-
-        updateEpisodeProgress($this->sessionId, $id, $seconds);
+        updateEpisodeProgress($this->sessionId, $id, $offsetMillis / 1000);
       }
 
       $response = new StdClass();

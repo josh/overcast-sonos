@@ -275,7 +275,10 @@
   function updateEpisodeProgress($token, $id, $position) {
     global $memcache;
 
-    if ($position == 2147483647) {
+    $episode = fetchEpisode($id);
+
+    if (isset($episode->duration) && $position >= $episode->duration) {
+      $position = 2147483647;
       invalidateAccountCache($token);
     }
 
@@ -284,8 +287,6 @@
     $progress = $rawProgress ?
       unserialize(decrypt($rawProgress, $token)) :
       fetchEpisodeProgress($token, $id);
-
-    $episode = fetchEpisode($id);
 
     $ch = curl_init();
 
