@@ -164,7 +164,10 @@
       $response = new StdClass();
       $response->getExtendedMetadataResult = new StdClass();
 
-      if (substr($id, 0, 1) == '+') {
+      if ($id == "root") {
+      } elseif ($id == "active") {
+      } elseif ($id == "podcasts") {
+      } elseif (substr($id, 0, 1) == '+') {
         $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
         $response->getExtendedMetadataResult->mediaMetadata = $this->findEpisodeMediaMetadata($id, in_array($id, $activeEpisodeIDs));
       } else {
