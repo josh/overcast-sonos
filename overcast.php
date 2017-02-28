@@ -125,7 +125,7 @@
       throw new Exception("invalid podcast id");
     }
 
-    $key = "overcast:fetchPodcast:v2:$id";
+    $key = "overcast:fetchPodcast:v3:$id";
     $data = $memcache->get($key);
     if ($data) {
       return unserialize($data);
@@ -156,13 +156,9 @@
       $podcast->episodeIDs[] = $id;
 
       $caption = $xpath->query('.//div[@class="caption2 singleline"]', $a)[0]->textContent;
-      preg_match('/(\d\d):(\d\d):(\d\d)/', $caption, $matches);
+      preg_match('/(\d+) min/', $caption, $matches);
       if (isset($matches[0])) {
-        $podcast->episodeDurations[$id] = (
-          ((int)$matches[1] * 3600) +
-          ((int)$matches[2] * 60) +
-          ((int)$matches[3])
-        );
+        $podcast->episodeDurations[$id] = ((int)$matches[1] * 60);
       }
     }
 
