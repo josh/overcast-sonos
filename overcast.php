@@ -38,6 +38,7 @@
 
   class Episode {
     public $id;
+    public $number;
     public $podcastId;
     public $podcastTitle;
     public $title;
@@ -170,7 +171,7 @@
   function fetchEpisode($id) {
     global $memcache;
 
-    $key = "overcast:fetchEpisode:v3:$id";
+    $key = "overcast:fetchEpisode:v4:$id";
     $data = $memcache->get($key);
     if ($data) {
       return unserialize($data);
@@ -204,6 +205,13 @@
 
     $episode->title = $xpath->query('//div[@class="title"]')[0]->textContent;
     $episode->description = $xpath->query('//meta[@name="og:description"]')[0]->getAttribute('content');
+    $episode->number = array_search($episode->id, array_reverse($podcast->episodeIDs)) + 1;
+
+    preg_match('/^#?(\d+)\s*(:|-|–|—)?\s*/', $episode->title, $matches);
+    if (isset($matches[0])) {
+      $episode->title = substr($episode->title, strlen($matches[0]));
+      $episode->number = (int)$matches[1];
+    }
 
     $url = $xpath->query('//meta[@name="og:image"]')[0]->getAttribute('content');
     $params = array();
