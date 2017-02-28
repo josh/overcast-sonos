@@ -306,7 +306,10 @@
       $media->trackMetadata->albumArtURI = $episode->imageURL;
       $media->trackMetadata->albumId = $episode->podcastId;
       $media->trackMetadata->album = $episode->podcastTitle;
-      $media->trackMetadata->trackNumber = $episode->number;
+
+      if (isset($episode->number)) {
+        $media->trackMetadata->trackNumber = $episode->number;
+      }
 
       if (isset($episode->duration)) {
         $media->trackMetadata->canResume = true;
