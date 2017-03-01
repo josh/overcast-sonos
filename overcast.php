@@ -179,6 +179,11 @@
 
     $body = fetch("https://overcast.fm/" . $id);
 
+    preg_match('/Sorry, not found\./', $body, $matches);
+    if (isset($matches[0])) {
+      return NULL;
+    }
+
     libxml_use_internal_errors(true);
 
     $dom = new DOMDocument();
