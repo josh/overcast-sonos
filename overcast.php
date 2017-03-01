@@ -76,7 +76,7 @@
   function fetchAccount($token) {
     global $memcache;
 
-    $key = "overcast:fetchAccount:v2:" . sha1($token);
+    $key = "overcast:fetchAccount:v3:" . sha1($token);
     $data = $memcache->get($key);
     if ($data) {
       return unserialize(decrypt($data, $token));
@@ -103,8 +103,11 @@
     }
 
     foreach ($xpath->query('//a[@class="episodecell"]') as $cell) {
-      $id = substr($cell->getAttribute('href'), 1);
-      $result->episodeIDs[] = $id;
+      $podcast = $xpath->query('.//div[@class="caption2 singleline"]', $cell)[0]->textContent;
+      if ($podcast != 'Uploads') {
+        $id = substr($cell->getAttribute('href'), 1);
+        $result->episodeIDs[] = $id;
+      }
     }
 
     $memcache->set($key, encrypt(serialize($result), $token), time() + 150);
@@ -115,7 +118,7 @@
   function invalidateAccountCache($token) {
     global $memcache;
 
-    $key = "overcast:fetchAccount:v2:" . sha1($token);
+    $key = "overcast:fetchAccount:v3:" . sha1($token);
     $memcache->delete($key);
   }
 
@@ -199,7 +202,7 @@
     $podcast = fetchPodcast($episode->podcastId);
 
     if (empty($podcast->episodeDurations[$id])) {
-      $memcache->delete("overcast:fetchPodcast:v2:" . $episode->podcastId);
+      $memcache->delete("overcast:fetchPodcast:v3:" . $episode->podcastId);
       $podcast = fetchPodcast($episode->podcastId);
     }
 
