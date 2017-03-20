@@ -103,6 +103,30 @@
                 </xs:complexType>
             </xs:element>
 
+            <xs:element name="nickname">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="32"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+
+            <xs:simpleType name="userAccountType">
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="premium"/>
+                    <xs:enumeration value="trial"/>
+                    <xs:enumeration value="free"/>
+                </xs:restriction>
+            </xs:simpleType>
+
+            <xs:simpleType name="userAccountStatus">
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="active"/>
+                    <xs:enumeration value="restricted"/>
+                    <xs:enumeration value="expired"/>
+                </xs:restriction>
+            </xs:simpleType>
+
             <xs:element name="credentials">
                 <xs:complexType>
                     <xs:sequence>
@@ -249,9 +273,12 @@
             <xs:complexType name="appLinkInfo">
                 <xs:sequence>
                     <!--  Required. A URL the Sonos Application will open. Typically after a user selects it. -->
-                    <xs:element name="appUrl"             type="tns:sonosUri" minOccurs="1"/>
+                    <xs:element name="appUrl"             type="tns:sonosUri" minOccurs="0"/>
                     <!-- Required. A string resource id (in strings.xml) to use as a label for the link to "appUrL" -->
                     <xs:element name="appUrlStringId"     type="xs:string" minOccurs="1"/>
+                    <!-- Optional. deviceLink data to use as a fall-back if the app the appURL points to is not installed
+                    or the appLink method is not available on the current platform -->
+                    <xs:element name="deviceLink" type="tns:deviceLinkCodeResult" minOccurs="0" />
                     <!-- Optional. A string resource id to message the user in case Sonos fails to open "appUrl" -->
                     <xs:element name="failureStringId"    type="xs:string" minOccurs="0"/>
                     <!-- Optional. A URL where users can go to get support or find out more about what might possibly be wrong. Use
@@ -305,6 +332,19 @@
                 <xs:sequence>
                     <xs:element name="authToken" type="xs:string"/>
                     <xs:element name="privateKey" type="xs:string"/>
+                    <xs:element name="userInfo" type="tns:userInfo" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="userInfo">
+                <xs:sequence>
+                    <!-- Everything except userIdHashCode and nickname are for future use -->
+                    <xs:element name="userIdHashCode" type="xs:string" minOccurs="1"/>
+                    <xs:element name="accountType" type="tns:userAccountType" minOccurs="0"/>
+                    <xs:element name="accountStatus" type="tns:userAccountStatus" minOccurs="0"/>
+                    <xs:element ref="tns:nickname" minOccurs="0"/>
+                    <xs:element name="profileUrl" type="tns:sonosUri" minOccurs="0"/>
+                    <xs:element name="pictureUrl" type="tns:sonosUri" minOccurs="0"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -758,6 +798,17 @@
                 </xs:complexType>
             </xs:element>
 
+            <xs:element name="getUserInfo">
+                <xs:complexType/>
+            </xs:element>
+            <xs:element name="getUserInfoResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="getUserInfoResult" type="tns:userInfo"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
             <xs:element name="rateItem">
                 <xs:complexType>
                     <xs:sequence>
@@ -1006,6 +1057,9 @@
                         <xs:element name="householdId" type="tns:id"/>
                         <xs:element name="linkCode" type="xs:string"/>
                         <xs:element name="linkDeviceId" type="xs:string" minOccurs="0"/>
+                        <!--callbackPath element will only be sent when authType = appLink
+                        Doing so maintains backwards compatibility with deviceLink-->
+                        <xs:element name="callbackPath" type="xs:string" minOccurs="0"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1017,6 +1071,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+
             <xs:element name="refreshAuthTokenResponse">
                 <xs:complexType>
                     <xs:sequence>
@@ -1239,6 +1294,14 @@
         <wsdl:part name="parameters" element="tns:getExtendedMetadataTextResponse"/>
     </wsdl:message>
 
+    <wsdl:message name="getUserInfoIn">
+        <wsdl:part name="parameters" element="tns:getUserInfo"/>
+    </wsdl:message>
+
+    <wsdl:message name="getUserInfoOut">
+        <wsdl:part name="parameters" element="tns:getUserInfoResponse"/>
+    </wsdl:message>
+
     <wsdl:message name="rateItemIn">
         <wsdl:part name="parameters" element="tns:rateItem"/>
     </wsdl:message>
@@ -1455,6 +1518,11 @@
             <wsdl:output message="tns:getExtendedMetadataTextOut"/>
             <wsdl:fault message="tns:customFault" name="customFault"/>
         </wsdl:operation>
+        <wsdl:operation name="getUserInfo">
+            <wsdl:input message="tns:getUserInfoIn"/>
+            <wsdl:output message="tns:getUserInfoOut"/>
+            <wsdl:fault message="tns:customFault" name="customFault"/>
+        </wsdl:operation>
         <wsdl:operation name="rateItem">
             <wsdl:input message="tns:rateItemIn"/>
             <wsdl:output message="tns:rateItemOut"/>
@@ -1624,6 +1692,20 @@
         </wsdl:operation>
         <wsdl:operation name="getExtendedMetadataText">
             <soap:operation soapAction="http://www.sonos.com/Services/1.1#getExtendedMetadataText" style="document"/>
+            <wsdl:input>
+                <soap:header use="literal" message="tns:smapiHeader" part="credentials"/>
+                <soap:header use="literal" message="tns:smapiHeader" part="context"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="customFault">
+                <soap:fault name="customFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getUserInfo">
+            <soap:operation soapAction="http://www.sonos.com/Services/1.1#getUserInfo" style="document"/>
             <wsdl:input>
                 <soap:header use="literal" message="tns:smapiHeader" part="credentials"/>
                 <soap:header use="literal" message="tns:smapiHeader" part="context"/>
