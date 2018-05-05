@@ -23,7 +23,7 @@ Navigate to `http://$IP:1400/customsd`. For example, if your Sonos IP address wa
 
 Fill out the custom service registration form with the following values.
 
-<img src="images/customsd.png">
+<img src="images/customsd.png" width=888 height=914>
 
 ### Add Music Service
 
