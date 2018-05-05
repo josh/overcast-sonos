@@ -11,21 +11,19 @@ Just want to try it out? [Follow these setup instructions to register the Overca
 
 ### Find the IP address of your Sonos.
 
-From the iOS Sonos App, go to **Settings** > **About My Sonos System**. [Check out this Sonos support article if you're on another platform.](https://sonos.custhelp.com/app/answers/detail/a_id/2626/)
+From the iOS Sonos App, go to **Settings** > **About My Sonos System**.
 
 <img src="images/sonos-ip.png" width=400 height=453>
 
+[Check out this Sonos support article if you're on another platform.](https://sonos.custhelp.com/app/answers/detail/a_id/2626/)
+
 ### Register the custom service
 
-Enter your Sonos IP here and click **Register Service**. The window on the right should say `success!` if the service was successfully installed.
+Navigate to `http://$IP:1400/customsd`. For example, if your Sonos IP address was `10.0.1.10`, you'd navigate to `http://10.0.1.10:1400/customsd` in your web browser.
 
-Didn't work?
+Fill out the custom service registration form with the following values.
 
-Alternatively you can run this `curl` command in the terminal.
-
-```sh
-$ curl 'http://10.0.1.10:1400/customsd' --data 'sid=255&name=Overcast&uri=http%3A%2F%2Fovercast-sonos.herokuapp.com%2Fsmapi.php&secureUri=https%3A%2F%2Fovercast-sonos.herokuapp.com%2Fsmapi.php&pollInterval=30&authType=UserId&stringsVersion=1&stringsUri=http%3A%2F%2Fovercast-sonos.herokuapp.com%2Fstrings.xml&presentationMapVersion=1&presentationMapUri=http%3A%2F%2Fovercast-sonos.herokuapp.com%2Fpmap.xml&containerType=MService&caps=trFavorites&caps=alFavorites&caps=logging&caps=playbackLogging&caps=extendedMD'
-```
+<img src="images/customsd.png">
 
 ### Add Music Service
 
