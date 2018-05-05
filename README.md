@@ -2,10 +2,34 @@
 
 Listen to your Overcast podcasts on Sonos.
 
-Just want to try it out? [Follow these setup instructions to register the Overcast service on your Sonos system](http://overcast-sonos.herokuapp.com/setup.php).
+Just want to try it out? [Follow these setup instructions to register the Overcast service on your Sonos system](#setup).
 
 <img src="images/playlist.png" width=400 height=688>
 <img src="images/player.png" width=400 height=688>
+
+## Setup
+
+### Find the IP address of your Sonos.
+
+From the iOS Sonos App, go to **Settings** > **About My Sonos System**. [Check out this Sonos support article if you're on another platform.](https://sonos.custhelp.com/app/answers/detail/a_id/2626/)
+
+<img src="images/sonos-ip.png">
+
+### Register the custom service
+
+Enter your Sonos IP here and click **Register Service**. The window on the right should say `success!` if the service was successfully installed.
+
+Didn't work?
+
+Alternatively you can run this `curl` command in the terminal.
+
+```sh
+$ curl 'http://10.0.1.10:1400/customsd' --data 'sid=255&name=Overcast&uri=http%3A%2F%2Fovercast-sonos.herokuapp.com%2Fsmapi.php&secureUri=https%3A%2F%2Fovercast-sonos.herokuapp.com%2Fsmapi.php&pollInterval=30&authType=UserId&stringsVersion=1&stringsUri=http%3A%2F%2Fovercast-sonos.herokuapp.com%2Fstrings.xml&presentationMapVersion=1&presentationMapUri=http%3A%2F%2Fovercast-sonos.herokuapp.com%2Fpmap.xml&containerType=MService&caps=trFavorites&caps=alFavorites&caps=logging&caps=playbackLogging&caps=extendedMD'
+```
+
+### Add Music Service
+
+From the iOS Sonos App, go to **Add Music Services** and find **Overcast** in the list. Log in with your [Overcast.fm](https://overcast.fm/login) email address and password.
 
 ## Questions and Answers
 
