@@ -13,7 +13,7 @@ Just want to try it out? [Follow these setup instructions to register the Overca
 
 From the iOS Sonos App, go to **Settings** > **About My Sonos System**. [Check out this Sonos support article if you're on another platform.](https://sonos.custhelp.com/app/answers/detail/a_id/2626/)
 
-<img src="images/sonos-ip.png">
+<img src="images/sonos-ip.png" width=400 height=453>
 
 ### Register the custom service
 
