@@ -138,6 +138,12 @@
 
     $body = fetch("https://overcast.fm/" . $id);
 
+    preg_match('/Sorry, not found\./', $body, $matches);
+    if (isset($matches[0])) {
+      $memcache->set($key, serialize(NULL), time() + 86400);
+      return NULL;
+    }
+
     libxml_use_internal_errors(true);
 
     $dom = new DOMDocument();
@@ -185,6 +191,7 @@
 
     preg_match('/Sorry, not found\./', $body, $matches);
     if (isset($matches[0])) {
+      $memcache->set($key, serialize(NULL));
       return NULL;
     }
 
