@@ -127,6 +127,9 @@
 
       $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
       $response->getMediaMetadataResult = $this->findEpisodeMediaMetadata($id, in_array($id, $activeEpisodeIDs));
+      if (is_null($response->getMediaMetadataResult)) {
+        return new SoapFault("Client.ItemNotFound", "Episode not found.");
+      }
 
       $duration = microtime(true) - $start;
       error_log("SOAP getMediaMetadata " . round($duration * 1000) . "ms");
@@ -139,8 +142,13 @@
 
       $id = $params->id;
 
+      $episode = fetchEpisode($id);
+      if (is_null($episode)) {
+        return new SoapFault("Client.ItemNotFound", "Episode not found.");
+      }
+
       $response = new StdClass();
-      $response->getMediaURIResult = followRedirects(fetchEpisode($id)->url);
+      $response->getMediaURIResult = followRedirects($episode->url);
 
       $progress = fetchEpisodeProgress($this->sessionId, $id);
       if ($progress) {
@@ -170,8 +178,14 @@
       } elseif (substr($id, 0, 1) == '+') {
         $activeEpisodeIDs = fetchAccount($this->sessionId)->episodeIDs;
         $response->getExtendedMetadataResult->mediaMetadata = $this->findEpisodeMediaMetadata($id, in_array($id, $activeEpisodeIDs));
+        if (is_null($response->getExtendedMetadataResult->mediaMetadata)) {
+          return new SoapFault("Client.ItemNotFound", "Episode not found.");
+        }
       } else {
         $response->getExtendedMetadataResult->mediaCollection = $this->findPodcastMediaMetadata($id);
+        if (is_null($response->getExtendedMetadataResult->mediaCollection)) {
+          return new SoapFault("Client.ItemNotFound", "Podcast not found.");
+        }
       }
 
       $duration = microtime(true) - $start;
@@ -271,6 +285,10 @@
 
     function findPodcastMediaMetadata($id) {
       $podcast = fetchPodcast($id);
+      if (is_null($podcast)) {
+        return NULL;
+      }
+
       $media = new StdClass();
       $media->id = $podcast->id;
       $media->itemType = "album";
@@ -285,6 +303,9 @@
 
     function findEpisodeMediaMetadata($id, $favorite) {
       $episode = fetchEpisode($id);
+      if (is_null($episode)) {
+        return NULL;
+      }
 
       $media = new StdClass();
       $media->id = $episode->id;
