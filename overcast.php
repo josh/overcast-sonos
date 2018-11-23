@@ -98,14 +98,15 @@
 
     foreach ($xpath->query('//a[@class="feedcell"]') as $cell) {
       $id = substr($cell->getAttribute('href'), 1);
-      if (isset(fetchPodcast($id))) {
+      if ($id != 'uploads') {
         $result->podcastIDs[] = $id;
       }
     }
 
     foreach ($xpath->query('//a[@class="episodecell"]') as $cell) {
-      $id = substr($cell->getAttribute('href'), 1);
-      if (isset(fetchEpisode($id))) {
+      $podcast = $xpath->query('.//div[@class="caption2 singleline"]', $cell)[0]->textContent;
+      if ($podcast != 'Uploads') {
+        $id = substr($cell->getAttribute('href'), 1);
         $result->episodeIDs[] = $id;
       }
     }
