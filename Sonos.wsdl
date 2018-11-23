@@ -244,7 +244,7 @@
                 <xs:sequence>
                     <xs:element ref="tns:id"/>
                     <xs:element ref="tns:itemType"/>
-                    <xs:element name="displayType" type="xs:string"/>
+                    <xs:element name="displayType" type="xs:string" minOccurs="0"/>
                     <xs:element name="title" type="xs:string"/>
 
                     <!--
@@ -255,6 +255,13 @@
                     <!--Indicates that the item is currently favorited.
                        If omitted, we don't know the favorited state. -->
                     <xs:element name="isFavorite" type="xs:boolean" minOccurs="0"/>
+                    <!--Indicates one or more tags are relevant for the item. In the UI
+                     this may translate to badges (icons) being displayed
+                     with the metadata for the track or container-->
+                    <xs:element name="tags" type="tns:tagsData" minOccurs="0" maxOccurs="1"/>
+
+                    <!-- This combined with user settings determine content playability -->
+                    <xs:element name="isExplicit" type="xs:boolean" minOccurs="0"/>
 
                     <!--
                        Included for backwards compatibility with MOAPI 1.0. These are
@@ -446,9 +453,17 @@
                             <xs:element name="homogeneous" type="xs:boolean" minOccurs="0"/>
                             <xs:element name="canAddToFavorite" type="xs:boolean" minOccurs="0"/>
                         </xs:sequence>
+
+                        <!-- For editable containers you must always return readOnly false. You can further configure
+                             editable features with the use of canReorderItems and canDeleteItems -->
                         <xs:attribute name="readOnly" type="xs:boolean" use="optional" default="true"/>
-                        <xs:attribute name="userContent" type="xs:boolean" use="optional" default="false"/>
+                        <!-- You can control if the items in the collection can be deleted and/or reordered with the
+                             following attributes -->
+                        <xs:attribute name="canReorderItems" type="xs:boolean" use="optional" default="false"/>
+                        <xs:attribute name="canDeleteItems"  type="xs:boolean" use="optional" default="false"/>
+
                         <xs:attribute name="renameable" type="xs:boolean" use="optional" default="false"/>
+                        <xs:attribute name="userContent" type="xs:boolean" use="optional" default="false"/>
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
@@ -457,22 +472,22 @@
                 <xs:sequence>
                     <xs:choice>
                         <xs:sequence>
-                    <xs:element name="artistId" type="tns:id" minOccurs="0"/>
-                    <xs:element name="artist" type="xs:string" minOccurs="0"/>
-                    <xs:element name="composerId" type="tns:id" minOccurs="0"/>
-                    <xs:element name="composer" type="xs:string" minOccurs="0"/>
-                             <xs:element name="albumArtistId" type="tns:id" minOccurs="0"/>
-                             <xs:element name="albumArtist" type="xs:string" minOccurs="0"/>
-                    <xs:element name="albumId" type="tns:id" minOccurs="0"/>
-                    <xs:element name="album" type="xs:string" minOccurs="0"/>
+                            <xs:element name="artistId" type="tns:id" minOccurs="0"/>
+                            <xs:element name="artist" type="xs:string" minOccurs="0"/>
+                            <xs:element name="composerId" type="tns:id" minOccurs="0"/>
+                            <xs:element name="composer" type="xs:string" minOccurs="0"/>
+                            <xs:element name="albumArtistId" type="tns:id" minOccurs="0"/>
+                            <xs:element name="albumArtist" type="xs:string" minOccurs="0"/>
+                            <xs:element name="albumId" type="tns:id" minOccurs="0"/>
+                            <xs:element name="album" type="xs:string" minOccurs="0"/>
                         </xs:sequence>
                         <xs:sequence>
-                             <xs:element name="authorId" type="xs:string" minOccurs="0" />
-                             <xs:element name="author" type="xs:string" minOccurs="0" />
-                             <xs:element name="narratorId" type="xs:string" minOccurs="0" />
-                             <xs:element name="narrator" type="xs:string" minOccurs="0" />
-                             <xs:element name="bookId" type="xs:string" minOccurs="0" />
-                             <xs:element name="book" type="xs:string" minOccurs="0" />
+                            <xs:element name="authorId" type="xs:string" minOccurs="0" />
+                            <xs:element name="author" type="xs:string" minOccurs="0" />
+                            <xs:element name="narratorId" type="xs:string" minOccurs="0" />
+                            <xs:element name="narrator" type="xs:string" minOccurs="0" />
+                            <xs:element name="bookId" type="xs:string" minOccurs="0" />
+                            <xs:element name="book" type="xs:string" minOccurs="0" />
                         </xs:sequence>
                     </xs:choice>
                     <xs:element name="genreId" type="tns:id" minOccurs="0"/>
@@ -547,6 +562,13 @@
             <xs:complexType name="behaviorsData">
                 <xs:sequence>
                     <xs:element name="supportsQuickSkip" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="tagsData">
+                <xs:sequence>
+                    <xs:element name="explicit" type="xs:int" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="premium" type="xs:int" minOccurs="0" maxOccurs="1"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -692,6 +714,12 @@
                 </xs:sequence>
             </xs:complexType>
 
+            <xs:complexType name="relatedActions">
+                <xs:sequence>
+                    <xs:element name="action" type="tns:genericAction" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+            </xs:complexType>
+
             <xs:complexType name="extendedMetadata">
                 <xs:sequence>
                     <xs:choice>
@@ -701,6 +729,53 @@
                     <xs:element name="relatedBrowse" type="tns:relatedBrowse" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element name="relatedText" type="tns:relatedText" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element name="relatedPlay" type="tns:relatedPlay" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="relatedActions" type="tns:relatedActions" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:simpleType name="actionType">
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="openUrl"/>
+                    <xs:enumeration value="simpleHttpRequest"/>
+                    <xs:enumeration value="rateItem"/>
+                </xs:restriction>
+            </xs:simpleType>
+
+            <xs:complexType name="genericAction">
+                <xs:sequence>
+                    <xs:element ref="tns:id"/>
+                    <xs:element name="title" type="xs:string"/>
+                    <xs:element name="actionType" type="tns:actionType"/>
+                    <xs:element name="showInBrowse" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+                    <xs:choice>
+                        <xs:element name="openUrlAction" type="tns:openUrlAction"/>
+                        <xs:element name="simpleHttpRequestAction" type="tns:simpleHttpRequestAction"/>
+                        <xs:element name="rateItemAction" type="tns:rateItemAction"/>
+                    </xs:choice>
+                    <xs:element name="successMessageStringId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="failureMessageStringId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="openUrlAction">
+                <xs:sequence>
+                    <xs:element name="url" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="simpleHttpRequestAction">
+                <xs:sequence>
+                    <xs:element name="url" type="xs:string"/>
+                    <xs:element name="method" type="xs:string"/>
+                    <xs:element name="httpHeaders" type="tns:httpHeaders" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="refreshOnSuccess" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="rateItemAction">
+                <xs:sequence>
+                    <xs:element ref="tns:rateItem"/>
+                    <xs:element name="shouldSkip" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -1055,7 +1130,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="householdId" type="tns:id"/>
-                        <xs:element name="linkCode" type="xs:string"/>
+                        <xs:element name="linkCode" type="xs:string" minOccurs="0"/>
                         <xs:element name="linkDeviceId" type="xs:string" minOccurs="0"/>
                         <!--callbackPath element will only be sent when authType = appLink
                         Doing so maintains backwards compatibility with deviceLink-->
@@ -1070,6 +1145,10 @@
                         <xs:element name="getDeviceAuthTokenResult" type="tns:deviceAuthTokenResult"/>
                     </xs:sequence>
                 </xs:complexType>
+            </xs:element>
+
+            <xs:element name="refreshAuthToken">
+                <xs:complexType/>
             </xs:element>
 
             <xs:element name="refreshAuthTokenResponse">
@@ -1243,7 +1322,7 @@
                 </xs:complexType>
             </xs:element>
 
-            <xs:element name="customFaultDetail">
+            <xs:element name="customFault">
                 <xs:complexType>
                     <xs:choice>
                         <xs:sequence>
@@ -1422,6 +1501,14 @@
         <wsdl:part name="parameters" element="tns:getDeviceLinkCodeResponse"/>
     </wsdl:message>
 
+    <wsdl:message name="refreshAuthTokenIn">
+        <wsdl:part name="parameters" element="tns:refreshAuthToken"/>
+    </wsdl:message>
+
+    <wsdl:message name="refreshAuthTokenOut">
+        <wsdl:part name="parameters" element="tns:refreshAuthTokenResponse"/>
+    </wsdl:message>
+
     <wsdl:message name="getDeviceAuthTokenIn">
         <wsdl:part name="parameters" element="tns:getDeviceAuthToken"/>
     </wsdl:message>
@@ -1494,7 +1581,7 @@
     </wsdl:message>
 
     <wsdl:message name="customFault">
-        <wsdl:part name="customFault" element="tns:customFaultDetail"/>
+       <wsdl:part name="customFault" element="tns:customFault"/>
     </wsdl:message>
 
     <wsdl:portType name="SonosSoap">
@@ -1601,6 +1688,11 @@
         <wsdl:operation name="getDeviceAuthToken">
             <wsdl:input message="tns:getDeviceAuthTokenIn"/>
             <wsdl:output message="tns:getDeviceAuthTokenOut"/>
+            <wsdl:fault message="tns:customFault" name="customFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="refreshAuthToken">
+            <wsdl:input message="tns:refreshAuthTokenIn"/>
+            <wsdl:output message="tns:refreshAuthTokenOut"/>
             <wsdl:fault message="tns:customFault" name="customFault"/>
         </wsdl:operation>
         <!-- Deprecated as of 6.3. To embed metadata use HLS specification. -->
@@ -1930,6 +2022,20 @@
         </wsdl:operation>
         <wsdl:operation name="getDeviceAuthToken">
             <soap:operation soapAction="http://www.sonos.com/Services/1.1#getDeviceAuthToken" style="document"/>
+            <wsdl:input>
+                <soap:header use="literal" message="tns:smapiHeader" part="credentials"/>
+                <soap:header use="literal" message="tns:smapiHeader" part="context"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="customFault">
+                <soap:fault name="customFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="refreshAuthToken">
+            <soap:operation soapAction="http://www.sonos.com/Services/1.1#refreshAuthToken" style="document"/>
             <wsdl:input>
                 <soap:header use="literal" message="tns:smapiHeader" part="credentials"/>
                 <soap:header use="literal" message="tns:smapiHeader" part="context"/>
