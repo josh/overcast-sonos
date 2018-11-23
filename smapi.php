@@ -283,7 +283,7 @@
         $media->itemType = "album";
         $media->displayType = "";
         $media->title = "Podcast not found";
-        $media->canPlay = true;
+        $media->canPlay = false;
         $media->canAddToFavorites = false;
         $media->containsFavorite = false;
       } else {
