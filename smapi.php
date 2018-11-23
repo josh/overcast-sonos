@@ -280,7 +280,7 @@
 
       if (is_null($podcast)) {
         $media->id = $id;
-        $media->itemType = "container";
+        $media->itemType = "album";
         $media->displayType = "";
         $media->title = "Podcast not found";
         $media->canPlay = false;
