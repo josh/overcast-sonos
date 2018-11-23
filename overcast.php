@@ -104,11 +104,8 @@
     }
 
     foreach ($xpath->query('//a[@class="episodecell"]') as $cell) {
-      $podcast = $xpath->query('.//div[@class="caption2 singleline"]', $cell)[0]->textContent;
-      if ($podcast != 'Uploads') {
-        $id = substr($cell->getAttribute('href'), 1);
-        $result->episodeIDs[] = $id;
-      }
+      $id = substr($cell->getAttribute('href'), 1);
+      $result->episodeIDs[] = $id;
     }
 
     $memcache->set($key, encrypt(serialize($result), $token), time() + 150);

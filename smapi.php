@@ -275,78 +275,69 @@
     }
 
     function findPodcastMediaMetadata($id) {
+      $media = new StdClass();
       $podcast = fetchPodcast($id);
+
       if (is_null($podcast)) {
-        return missingPodcastMediaMetadata($id);
+        $media->id = $id;
+        $media->itemType = "album";
+        $media->displayType = "";
+        $media->title = "Podcast not found";
+        $media->canPlay = false;
+        $media->canAddToFavorites = false;
+        $media->containsFavorite = false;
+      } else {
+        $media->id = $podcast->id;
+        $media->itemType = "album";
+        $media->displayType = "";
+        $media->title = $podcast->title;
+        $media->albumArtURI = $podcast->imageURL;
+        $media->canPlay = true;
+        $media->canAddToFavorites = false;
+        $media->containsFavorite = false;
       }
-
-      $media = new StdClass();
-      $media->id = $podcast->id;
-      $media->itemType = "album";
-      $media->displayType = "";
-      $media->title = $podcast->title;
-      $media->albumArtURI = $podcast->imageURL;
-      $media->canPlay = true;
-      $media->canAddToFavorites = false;
-      $media->containsFavorite = false;
-      return $media;
-    }
-
-    function missingPodcastMediaMetadata($id) {
-      $media = new StdClass();
-      $media->id = $id;
-      $media->itemType = "album";
-      $media->displayType = "";
-      $media->title = "ERROR: Podcast not found";
-      $media->canPlay = false;
-      return $media;
     }
 
     function findEpisodeMediaMetadata($id, $favorite) {
-      $episode = fetchEpisode($id);
-      if (is_null($episode)) {
-        return missingEpisodeMediaMetadata($id);
-      }
-
       $media = new StdClass();
-      $media->id = $episode->id;
-      $media->isFavorite = $favorite;
-      $media->displayType = "";
-      $media->mimeType = $episode->mimeType;
-      $media->itemType = "track";
-      $media->title = $episode->title;
-      $media->summary = "";
-      $media->trackMetadata = new StdClass();
-      $media->trackMetadata->canPlay = true;
-      $media->trackMetadata->canAddToFavorites = true;
-      $media->trackMetadata->albumArtURI = $episode->imageURL;
-      $media->trackMetadata->albumId = $episode->podcastId;
-      $media->trackMetadata->album = $episode->podcastTitle;
+      $episode = fetchEpisode($id);
 
-      if (isset($episode->number)) {
-        $media->trackMetadata->trackNumber = $episode->number;
-      }
+      if (is_null($episode)) {
+        $media->id = $id;
+        $media->itemType = "track";
+        $media->title = "Episode not found";
+        $media->mimeType = "audio/mp3";
+        $media->displayType = "";
+        $media->summary = "";
+        $media->trackMetadata = new StdClass();
+        $media->trackMetadata->canPlay = false;
+      } else {
+        $media->id = $episode->id;
+        $media->isFavorite = $favorite;
+        $media->displayType = "";
+        $media->mimeType = $episode->mimeType;
+        $media->itemType = "track";
+        $media->title = $episode->title;
+        $media->summary = "";
+        $media->trackMetadata = new StdClass();
+        $media->trackMetadata->canPlay = true;
+        $media->trackMetadata->canAddToFavorites = true;
+        $media->trackMetadata->albumArtURI = $episode->imageURL;
+        $media->trackMetadata->albumId = $episode->podcastId;
+        $media->trackMetadata->album = $episode->podcastTitle;
 
-      if (isset($episode->duration)) {
-        $media->trackMetadata->canResume = true;
-        $media->trackMetadata->duration = $episode->duration;
+        if (isset($episode->number)) {
+          $media->trackMetadata->trackNumber = $episode->number;
+        }
+
+        if (isset($episode->duration)) {
+          $media->trackMetadata->canResume = true;
+          $media->trackMetadata->duration = $episode->duration;
+        }
       }
 
       return $media;
     }
-  }
-
-  function missingEpisodeMediaMetadata($id) {
-    $media = new StdClass();
-    $media->id = $id;
-    $media->itemType = "track";
-    $media->title = "ERROR: Episode not found";
-    $media->mimeType = "audio/mp3";
-    $media->displayType = "";
-    $media->summary = "";
-    $media->trackMetadata = new StdClass();
-    $media->trackMetadata->canPlay = false;
-    return $media;
   }
 
   set_time_limit(10);
