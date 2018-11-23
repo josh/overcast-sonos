@@ -1,6 +1,8 @@
 <?php
   include 'overcast.php';
   $url = isset($_GET['url']) ? $_GET['url'] : NULL;
+  $email = isset($_GET['email']) ? $_GET['email'] : NULL;
+  $password = isset($_GET['password']) ? $_GET['password'] : NULL;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +20,11 @@
       </span>
     </form>
 
-    <?php if ($url): ?>
+    <?php if (isset($email) && isset($password)): ?>
+      <pre><?php
+        var_dump(fetchAccount(login($email, $password)));
+      ?></pre>
+    <?php elseif (isset($url)): ?>
       <pre><?php
         $id = substr($url, strlen("https://overcast.fm/"));
         if (substr($id, 0, 1) == "+") {
