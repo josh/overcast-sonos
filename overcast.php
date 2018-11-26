@@ -127,10 +127,6 @@
       throw new Exception("invalid podcast id");
     }
 
-    if ($id == 'uploads') {
-      return NULL;
-    }
-
     $key = "overcast:fetchPodcast:v3:$id";
     $data = $memcache->get($key);
     if ($data) {
@@ -139,8 +135,8 @@
 
     $body = fetch("https://overcast.fm/" . $id);
 
-    preg_match('/Sorry, not found\./', $body, $matches);
-    if (isset($matches[0])) {
+    preg_match('/extendedepisodecell/', $body, $matches);
+    if (!isset($matches[0])) {
       $memcache->set($key, serialize(NULL), time() + 86400);
       return NULL;
     }
@@ -190,8 +186,8 @@
 
     $body = fetch("https://overcast.fm/" . $id);
 
-    preg_match('/Sorry, not found\./', $body, $matches);
-    if (isset($matches[0])) {
+    preg_match('/audioplayer/', $body, $matches);
+    if (!isset($matches[0])) {
       $memcache->set($key, serialize(NULL));
       return NULL;
     }
