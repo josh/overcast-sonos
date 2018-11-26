@@ -127,6 +127,10 @@
       throw new Exception("invalid podcast id");
     }
 
+    if ($id == 'uploads') {
+      return NULL;
+    }
+
     $key = "overcast:fetchPodcast:v3:$id";
     $data = $memcache->get($key);
     if ($data) {
