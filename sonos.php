@@ -318,8 +318,7 @@ class Sonos
       $media->itemType = "album";
       $media->displayType = "";
       $media->title = "Podcast not found";
-      $media->albumArtURI = "";
-      $media->canPlay = true;
+      $media->canPlay = false;
       $media->canAddToFavorites = false;
       $media->containsFavorite = false;
     } else {
