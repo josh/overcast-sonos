@@ -1,5 +1,5 @@
 <?php
-include 'overcast.php';
+include_once 'overcast.php';
 $url = isset($_GET['url']) ? $_GET['url'] : null;
 ?>
 <!DOCTYPE html>

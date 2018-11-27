@@ -1,5 +1,7 @@
 <?php
-include 'overcast.php';
+include_once 'overcast.php';
+include_once 'sonos.php';
+
 switch ($_GET['method']) {
   case 'login':
     echo json_encode(login($_GET['email'], $_GET['password']));
