@@ -15,6 +15,23 @@ switch ($_GET['method']) {
   case 'fetchEpisode':
     echo json_encode(fetchEpisode($_GET['id']));
     break;
+  case 'getLastUpdate':
+    $params = new StdClass();
+    $params->sessionId = $_GET['sessionId'];
+    $sonos = new Sonos($params);
+    $sonos->credentials($params);
+    echo json_encode($sonos->getLastUpdate($params));
+    break;
+  case 'getMetadata':
+    $params = new StdClass();
+    $params->sessionId = $_GET['sessionId'];
+    $params->count = intval($_GET['count']);
+    $params->id = $_GET['id'];
+    $params->index = intval($_GET['index']);
+    $sonos = new Sonos($params);
+    $sonos->credentials($params);
+    echo json_encode($sonos->getMetadata($params));
+    break;
   default:
     http_response_code(400);
 }
