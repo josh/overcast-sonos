@@ -332,6 +332,8 @@ class Sonos
       $media->canAddToFavorites = false;
       $media->containsFavorite = false;
     }
+
+    return $media;
   }
 
   function findEpisodeMediaMetadata($id, $favorite)
