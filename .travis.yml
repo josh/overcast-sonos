@@ -1,0 +1,12 @@
+language: php
+php:
+  - "5.6"
+  - "7.3"
+
+services:
+  - docker
+
+before_install:
+  - docker build -t overcast-sonos .
+
+script: ./test.sh

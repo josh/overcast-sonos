@@ -12,3 +12,5 @@ RUN echo "date.timezone = UTC" > /usr/local/etc/php/conf.d/timezone.ini
 COPY . /var/www/html/
 
 EXPOSE 80
+
+HEALTHCHECK CMD curl --fail "http://localhost/debug.php?url=https%3A%2F%2Fovercast.fm%2Fitunes617416468%2Faccidental-tech-podcast" || exit 1
