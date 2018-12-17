@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 0);
+
 include_once 'overcast.php';
 include_once 'sonos.php';
 
