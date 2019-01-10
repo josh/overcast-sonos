@@ -6,4 +6,5 @@ for filename in *.php; do
   php -l "$filename"
 done
 
-./docker-healthcheck.sh
+curl --fail "http://web/api.php?method=fetchPodcast&id=itunes617416468%2Faccidental-tech-podcast"
+echo
