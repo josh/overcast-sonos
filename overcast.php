@@ -139,7 +139,7 @@ function fetchPodcast($id)
     throw new Exception("invalid podcast id");
   }
 
-  $key = "overcast:fetchPodcast:v3:$id";
+  $key = "overcast:fetchPodcast:v4:$id";
   $data = $memcache->get($key);
   if ($data) {
     return unserialize($data);
@@ -172,7 +172,7 @@ function fetchPodcast($id)
 
   $podcast->episodeIDs = [];
   foreach (
-    $xpath->query('//a[@class="extendedepisodecell usernewepisode"]')
+    $xpath->query('//a[contains(@class, "extendedepisodecell")]')
     as $a
   ) {
     $id = substr($a->getAttribute('href'), 1);
@@ -195,7 +195,7 @@ function fetchEpisode($id)
 {
   global $memcache;
 
-  $key = "overcast:fetchEpisode:v5:$id";
+  $key = "overcast:fetchEpisode:v6:$id";
   $data = $memcache->get($key);
   if ($data) {
     return unserialize($data);
@@ -227,7 +227,7 @@ function fetchEpisode($id)
   $podcast = fetchPodcast($episode->podcastId);
 
   if (empty($podcast->episodeDurations[$id])) {
-    $memcache->delete("overcast:fetchPodcast:v3:" . $episode->podcastId);
+    $memcache->delete("overcast:fetchPodcast:v4:" . $episode->podcastId);
     $podcast = fetchPodcast($episode->podcastId);
   }
 
