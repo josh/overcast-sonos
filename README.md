@@ -25,6 +25,12 @@ Fill out the custom service registration form with the following values.
 
 <img src="images/customsd.png" width=888 height=914>
 
+For the purpose of copy and paste:
+
+* http://overcast-sonos.herokuapp.com/smapi.php
+* http://overcast-sonos.herokuapp.com/strings.xml
+* http://overcast-sonos.herokuapp.com/pmap.xml
+
 ### Add Music Service
 
 From the iOS Sonos App, go to **Add Music Services** and find **Overcast** in the list. Log in with your [Overcast.fm](https://overcast.fm/login) email address and password.
