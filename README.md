@@ -27,9 +27,9 @@ Fill out the custom service registration form with the following values.
 
 For the purpose of copy and paste:
 
-* http://overcast-sonos.herokuapp.com/smapi.php
-* http://overcast-sonos.herokuapp.com/strings.xml
-* http://overcast-sonos.herokuapp.com/pmap.xml
+- http://overcast-sonos.herokuapp.com/smapi.php
+- http://overcast-sonos.herokuapp.com/strings.xml
+- http://overcast-sonos.herokuapp.com/pmap.xml
 
 ### Add Music Service
 
