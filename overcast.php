@@ -195,7 +195,7 @@ function fetchEpisode($id)
 {
   global $memcache;
 
-  $key = "overcast:fetchEpisode:v6:$id";
+  $key = "overcast:fetchEpisode:v7:$id";
   $data = $memcache->get($key);
   if ($data) {
     return unserialize($data);
@@ -220,7 +220,7 @@ function fetchEpisode($id)
   $episode->id = $id;
 
   $episode->podcastId = substr(
-    $xpath->query('//a[@class="ocbutton"]')[0]->getAttribute('href'),
+    $xpath->query('//div[@class="centertext"]/h3/a')[0]->getAttribute('href'),
     1
   );
 
@@ -236,12 +236,12 @@ function fetchEpisode($id)
   }
   $episode->podcastTitle = $podcast->title;
 
-  $episode->title = $xpath->query('//div[@class="title"]')[0]->textContent;
+  $episode->title = $xpath->query('//div[@class="centertext"]/h2')[0]->textContent;
   $episode->description = $xpath
     ->query('//meta[@name="og:description"]')[0]
     ->getAttribute('content');
 
-  $dateEl = $xpath->query('//div[@class="margintop1"]');
+  $dateEl = $xpath->query('//div[@class="centertext"]/div');
   if (isset($dateEl[0])) {
     $episode->date = strftime('%Y-%m-%d', strtotime($dateEl[0]->textContent));
   }
