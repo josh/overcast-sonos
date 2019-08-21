@@ -1,0 +1,16 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: build
+      run: docker-compose -f docker-compose.test.yml build
+
+    - name: test
+      run: docker-compose -f docker-compose.test.yml run sut
