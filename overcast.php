@@ -236,7 +236,9 @@ function fetchEpisode($id)
   }
   $episode->podcastTitle = $podcast->title;
 
-  $episode->title = $xpath->query('//div[@class="centertext"]/h2')[0]->textContent;
+  $episode->title = $xpath->query(
+    '//div[@class="centertext"]/h2'
+  )[0]->textContent;
   $episode->description = $xpath
     ->query('//meta[@name="og:description"]')[0]
     ->getAttribute('content');
